@@ -20,8 +20,22 @@ export const site = {
   city: "Visakhapatnam",
   region: "Andhra Pradesh",
   country: "India",
-  /** Verified: Visakhapatnam, Andhra Pradesh. Street address is NOT verified — do not add one. */
+  /** Owner-supplied 2026-10-30. Structured so /about, /contact and the footer share one source. */
+  address: {
+    line1: "A-3, B Block",
+    line2: "Autonagar",
+    city: "Visakhapatnam",
+    region: "Andhra Pradesh",
+    postalCode: "530012",
+    country: "India",
+    source: "Owner, 2026-10-30",
+  },
   locationLine: "Visakhapatnam, Andhra Pradesh, India",
+  /** Single-line postal form for the footer and structured data. */
+  addressLine: "A-3, B Block, Autonagar, Visakhapatnam 530012, Andhra Pradesh, India",
+  /** Opens a Maps *search* for the address — not a claimed verified pin or "Get Directions" promise. */
+  mapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=A-3%2C%20B%20Block%2C%20Autonagar%2C%20Visakhapatnam%20530012%2C%20Andhra%20Pradesh%2C%20India",
   /** Owner-supplied 2026-10-30. `href` is empty for email until an inbox exists. */
   phone: {
     display: "+91 74163 42020",

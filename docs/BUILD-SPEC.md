@@ -26,19 +26,22 @@
 | Brand name: **MITT** | brief + WR-PRD-001 |
 | Full name: **Metkan Institute for Technical Training** | `../docs/01_WORKER_REGISTRY_MVP_PRD.md` |
 | Location: **Visakhapatnam, Andhra Pradesh, India** | same |
+| Postal address: **A-3, B Block, Autonagar, Visakhapatnam 530012, Andhra Pradesh, India** | Owner-supplied 2026-10-30 |
+| Phone: **+91 74163 42020** | Owner-supplied 2026-10-30 |
 | Capability areas: technical training, skilled-worker screening, employer interview coordination, recruitment/placement support, workforce readiness coordination | client brief §1 |
 | Occupational categories: welding, fitting & fabrication, electrical, plumbing, mechanical & industrial support, construction trades, industrial helpers | client brief §1 |
 
 ### Unverified — placeholder only, never presented as fact
+
 | Element | Placeholder to use | Where |
 |---|---|---|
-| Phone | `+91 XXXXX XXXXX` (disabled, `aria-disabled`, title "contact detail pending") | header, footer, contact |
-| Email | `enquiries@mitt.example` (non-routable) | footer, contact |
-| Street address | `Visakhapatnam, Andhra Pradesh` (no street line) | footer |
-| WhatsApp | **omit entirely** — no approved business number | — |
+| Email | `Enquiries email pending confirmation` chip (`placeholder: true`, no href) | footer, contact |
+| WhatsApp | **omit entirely** — no approved business number confirmed | — |
 | Worker counts / placement stats / years / certifications / partner logos / testimonials | **omit; render real empty states instead** | evidence section |
 
-Placeholder values come from a single config object flagged `placeholder: true` so a later swap is one edit, and so the UI can render them in a visibly unfinished state (dotted underline + `title` attr), never as a normal link.
+**Now verified, and therefore publishable:** phone (`+91 74163 42020`) and the full postal address. A real, owner-supplied address also makes `EducationalOrganization` / `Organization` structured data with a `PostalAddress` legitimate — implement it in `src/lib/seo.ts` for `/` and `/about`. Do **not** emit `aggregateRating`, `review`, `openingHours`, geo coordinates or accreditation fields: none are verified.
+
+Placeholder values come from a single config object flagged `placeholder: true` so a later swap is one edit, and so the UI can render them in a visibly unfinished state, never as a normal link.
 
 ### Claims discipline (copy rules)
 - Never say *guaranteed*, *100% placement*, *verified deployment*, *visa assured*, *authorized for overseas recruitment*, *government certified*.
@@ -185,7 +188,6 @@ docs/{BUILD-SPEC,LAUNCH-CHECKLIST,MEDIA-INVENTORY,HANDOVER}.md
 ---
 
 ## 7. Accessibility & performance acceptance
-
 - WCAG 2.2 AA: axe clean (zero critical/serious) on `/`, `/for-employers`, `/contact`.
 - Keyboard: skip link first tab stop; every interactive element has visible `:focus-visible` ring (2px copper, 2px offset); mobile nav traps focus and restores it; Esc closes.
 - One `<h1>` per page; heading levels never skip.
