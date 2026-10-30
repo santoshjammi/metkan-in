@@ -30,11 +30,12 @@ Nothing on this list is optional. The site is **not launchable** until every ite
 
 | # | Item | Current state |
 |---|---|---|
-| C1 | Who receives a new enquiry, and how fast must they respond? | **Undecided.** The form persists every accepted enquiry to disk (`var/enquiries/*.jsonl`) but **no notification is configured**, so nobody is emailed. This is the single most important operational gap. |
-| C2 | Configure a notification channel: either `MITT_NOTIFY_WEBHOOK` (HTTPS endpoint) or SMTP (`MITT_SMTP_HOST`, `MITT_SMTP_PORT`, `MITT_SMTP_USER`, `MITT_SMTP_PASS`, `MITT_SMTP_FROM`, `MITT_NOTIFY_TO`) | Not configured |
-| C3 | Define the working response SLA to state on `/contact` (currently no response-time promise is made anywhere — deliberately) | Not stated |
-| C4 | Decide retention period for stored enquiries and who may read them | Not decided |
-| C5 | Confirm the single-instance rate limiter is acceptable (it resets on restart and does not share state across instances) | Documented limitation; fine for one VPS, not for multi-instance |
+| C1 | Who receives a new enquiry, and how fast must they respond? | **Undecided — the biggest operational gap.** Every accepted enquiry is persisted to `var/enquiries/*.jsonl`, and the UI truthfully shows a reference. **Nobody is emailed.** |
+| C2 | Configure a notification channel | **Not configured.** Implemented: `MITT_NOTIFY_WEBHOOK` (HTTPS endpoint, POST after a successful persist, 5s timeout, non-fatal on failure). **Not implemented: SMTP** — the earlier plan named `MITT_SMTP_*`; only the webhook exists. Either point the webhook at a mail-relay endpoint, or commission the SMTP path. |
+| C3 | Define the working response SLA to state on `/contact` | **No promise is made anywhere** — deliberate, because none is agreed. If MITT commits to a window, add it in `src/content/site.ts` and surface it on `/contact`. |
+| C4 | Decide retention period for stored enquiries and who may read them | Not decided. The privacy notice states retention while the relationship is active, deleted on request — no invented day count. |
+| C5 | Single-instance rate limiter acceptable? | **Verified limitation.** In-memory: 5 requests / 10 min per IP, resets on restart, no cross-instance state. Fine for one VPS; not for horizontal scaling. |
+| C6 | Back up the lead store before real traffic | Not scheduled. `var/` is git-ignored and not replicated. |
 
 ## D. Privacy & terms (BLOCKER)
 

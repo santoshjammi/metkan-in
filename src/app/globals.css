@@ -27,7 +27,7 @@
   --color-copper-hi: #e08e4e;
   /* copper at small sizes on ivory is 3.1:1 — below body AA. This is the
      equivalent accent for numerals and labels on light surfaces (5.11:1). */
-  --color-copper-ink: #9c5320;
+  --color-copper-ink: #8f4a1a;
   --color-text-dark: #111827;
   --color-line: rgba(245, 242, 234, 0.14);
   --color-line-ink: rgba(17, 24, 39, 0.12);

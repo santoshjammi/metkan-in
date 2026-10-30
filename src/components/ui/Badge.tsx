@@ -12,7 +12,10 @@ export const badgeVariants = cva(
   {
     variants: {
       tone: {
-        copper: "border-copper/45 bg-copper/10 text-copper-hi",
+        // Light surfaces: #8f4a1a clears AA on the copper-tinted badge fill (~5:1).
+        // Dark surfaces must use `copperOnDark` — this colour measures 3:1 on ink.
+        copper: "border-copper/45 bg-copper/10 text-copper-ink",
+        copperOnDark: "border-copper/45 bg-copper/10 text-copper-hi",
         steel: "border-line bg-transparent text-steel",
         ivory: "border-ivory/25 bg-ivory/5 text-ivory",
         ink: "border-ink/25 bg-ink/5 text-ink",

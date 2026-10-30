@@ -50,10 +50,11 @@ export function SiteHeader() {
       />
 
       <div className="shell flex h-16 items-center justify-between gap-4 md:h-20 md:gap-8">
+        {/* No aria-label: the visible wordmark + registered name are the accessible
+            name. An aria-label that omits visible text fails WCAG 2.5.3 (label in name). */}
         <Link
           href="/"
           className="group flex shrink-0 flex-col justify-center leading-none"
-          aria-label={`${site.name} — home`}
         >
           <span className="font-display text-[1.35rem] font-bold tracking-[-0.06em] text-ivory">
             {site.name}

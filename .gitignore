@@ -15,3 +15,7 @@ next-env.d.ts
 npm-debug.log*
 
 .shots/
+
+# local lead store (dev + runtime); never commit enquiries
+var/
+.test-leads/
