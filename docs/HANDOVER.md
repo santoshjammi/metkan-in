@@ -72,7 +72,7 @@ cat var/enquiries/enquiries-*.jsonl | jq -r '[.receivedAt, .reference, .organisa
 npx tsc --noEmit                      # types
 npm run lint                          # eslint
 npm run test                          # 47 unit tests (validation, rate limit, references, persistence)
-npx playwright test                   # 19 browser tests (routes, form, mobile nav, overflow)
+npx playwright test                   # 19 browser tests run across desktop + mobile projects (38 executions)
 node tests/a11y-audit.mjs             # axe across 11 routes x 2 viewports
 ```
 
