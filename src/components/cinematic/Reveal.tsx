@@ -1,9 +1,4 @@
-"use client";
-
-import { motion, useReducedMotion } from "motion/react";
-import type { ReactNode } from "react";
-
-const EASE: [number, number, number, number] = [0.22, 0.61, 0.36, 1];
+import type { CSSProperties, ReactNode } from "react";
 
 export interface RevealProps {
   children: ReactNode;
@@ -13,26 +8,21 @@ export interface RevealProps {
 }
 
 /**
- * Section-level entrance: opacity 0→1 with an 18px rise, once, at 520ms.
- * Reduced motion collapses the duration to zero (no transform, no fade).
+ * Section-level entrance: opacity 0 to 1 with an 18px rise, once.
+ *
+ * This is a server component: it ships markup and a CSS variable only. The
+ * transition itself lives in the shared `RevealObserver` island, and the
+ * element renders fully visible when JavaScript is not running.
  */
 export function Reveal({ children, className, delay = 0 }: RevealProps) {
-  const reduceMotion = useReducedMotion();
+  const style =
+    delay > 0
+      ? ({ "--reveal-delay": `${Math.round(delay * 1000)}ms` } as CSSProperties)
+      : undefined;
 
   return (
-    <motion.div
-      data-reveal=""
-      className={className}
-      initial={{ opacity: 0, y: 18 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-12%" }}
-      transition={{
-        duration: reduceMotion ? 0 : 0.52,
-        delay: reduceMotion ? 0 : delay,
-        ease: EASE,
-      }}
-    >
+    <div data-reveal="" className={className} style={style}>
       {children}
-    </motion.div>
+    </div>
   );
 }

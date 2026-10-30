@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { useEffect, useRef } from "react";
 import { processStages } from "@/content/process";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -58,19 +57,56 @@ export interface ProcessTimelineProps {
  * past. The rule is decoration only: no pinning, no scroll hijacking, and the
  * document scrolls exactly as it would without it.
  *
- * Reduced motion is handled in globals.css (`[data-process-rule]` is forced to
- * `scaleY(1)`), so the line is simply fully drawn for those users.
+ * The draw is a passive scroll calculation writing a single transform, so the
+ * scroll path carries no animation runtime and no React state. Reduced motion
+ * is handled in globals.css (`[data-process-rule]` is forced to `scaleY(1)`),
+ * so the line is simply fully drawn for those users.
  */
 export function ProcessTimeline({
   tone = "dark",
   className,
 }: ProcessTimelineProps) {
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ["start 0.85", "end 0.55"],
-  });
-  const scaleY = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const ruleRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    const rule = ruleRef.current;
+    if (!track || !rule) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+
+    /* 0 when the track's top reaches 85% of the viewport, 1 when its bottom
+       reaches 55% - the window the rule was originally drawn against. */
+    const update = () => {
+      frame = 0;
+      const rect = track.getBoundingClientRect();
+      const viewport = window.innerHeight || 1;
+      const start = rect.top - viewport * 0.85;
+      const end = rect.bottom - viewport * 0.55;
+      const span = end - start;
+      const progress = span <= 0 ? 1 : (0 - start) / span;
+      const clamped = progress < 0 ? 0 : progress > 1 ? 1 : progress;
+      rule.style.transform = `scaleY(${clamped})`;
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   const t = toneClasses[tone];
 
   return (
@@ -79,10 +115,10 @@ export function ProcessTimeline({
         aria-hidden="true"
         className={cn("absolute bottom-2 left-2 top-2 w-px", t.track)}
       />
-      <motion.div
+      <div
+        ref={ruleRef}
         aria-hidden="true"
         data-process-rule=""
-        style={{ scaleY }}
         className={cn(
           "absolute bottom-2 left-2 top-2 w-px origin-top",
           t.rule,
@@ -126,7 +162,7 @@ export function ProcessTimeline({
               >
                 <span className="sr-only">Boundary of this stage: </span>
                 <span aria-hidden="true" className={t.numeral}>
-                  —
+                  &mdash;
                 </span>
                 {stage.boundary}
               </p>

@@ -1,0 +1,24 @@
+# Deployment context for the website image ONLY.
+# Nothing outside this directory can reach the image: the build context is this folder.
+
+node_modules
+.next
+out
+.git
+.github
+.shots
+var
+.env
+.env.*
+!.env.example
+*.log
+*.tsbuildinfo
+next-env.d.ts
+coverage
+test-results
+playwright-report
+blob-report
+AGENTS.md
+tests
+docs
+deploy

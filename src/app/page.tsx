@@ -4,6 +4,7 @@ import { ArcGlow } from "@/components/cinematic/ArcGlow";
 import { GrainOverlay } from "@/components/cinematic/GrainOverlay";
 import { HeroMedia } from "@/components/cinematic/HeroMedia";
 import { Reveal } from "@/components/cinematic/Reveal";
+import { RevealObserver } from "@/components/cinematic/RevealObserver";
 import { Button } from "@/components/ui/Button";
 import { CTABand } from "@/components/marketing/CTABand";
 import { CapabilityGrid } from "@/components/marketing/CapabilityGrid";
@@ -49,6 +50,10 @@ const editorialPanels: EditorialPanelItem[] = [
 export default function HomePage() {
   return (
     <>
+      {/* One shared client island drives every entrance on this page. It also
+          owns the reveal CSS, so nothing here depends on an animation runtime. */}
+      <RevealObserver />
+
       {/* ── Act 1 — Hero ─────────────────────────────────────────────────── */}
       <section
         aria-labelledby="hero-heading"

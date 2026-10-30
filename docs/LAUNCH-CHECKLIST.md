@@ -58,7 +58,9 @@ See `docs/MEDIA-INVENTORY.md`. Summary: replace both placeholder images, or keep
 | F2 | Decide hosting target and set it up (Node server required — the enquiry API is a Node route handler and cannot run on static hosting) | Not deployed |
 | F3 | Add security headers / CSP at the host or in `next.config.ts` once the final third-party surface is known | Baseline headers are implemented; CSP should be tightened at launch |
 | F4 | Verify `robots.txt` disallows `/thank-you` and the API | Implemented in `src/app/robots.ts` |
-| F5 | Re-run Lighthouse mobile on production hardware | Local numbers only so far |
+| F5 | Re-run Lighthouse mobile on production hardware | **Measured locally (median of 3, mobile preset): performance 95, accessibility 100, best-practices 100, SEO 100, CLS 0, TBT 30ms.** Lab LCP reads 2.9s, which is Lighthouse's *simulated* render-delay model; a real throttled-device run (150ms RTT, 1.6 Mbps, 4x CPU) measures **1.4s**. Confirm the field p75 in CrUX after launch rather than trusting either lab number alone. |
+| F7 | Run the launch gate | `npm run preflight` — exits 1 until the three blockers (site URL, contact email, notification) are resolved. This is the last thing to run before pointing DNS at the host. |
+| F8 | Run the boundary guard | `npm run boundary` — proves this repo cannot reach, disclose or deploy the separate internal application. |
 | F6 | Back up the lead store before first real traffic | Manual step |
 
 ## G. Deliberately not built (and why)

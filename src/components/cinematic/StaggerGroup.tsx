@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "motion/react";
 import type { ReactNode } from "react";
 
 export interface StaggerGroupProps {
@@ -12,19 +9,15 @@ export interface StaggerGroupProps {
 
 /**
  * List container for staggered entrances. Children must be <StaggerItem>.
- * The stagger lives on each item (index-based) so it caps at six no matter
- * how many items are rendered.
+ *
+ * The group is what the shared observer watches, so the whole list reveals as
+ * one gesture; the stagger lives on each item (index-based) and caps at six no
+ * matter how many items are rendered. Server component: no JavaScript here.
  */
 export function StaggerGroup({ children, className, label }: StaggerGroupProps) {
   return (
-    <motion.ul
-      aria-label={label}
-      className={className}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-10%" }}
-    >
+    <ul aria-label={label} className={className} data-stagger-group="">
       {children}
-    </motion.ul>
+    </ul>
   );
 }

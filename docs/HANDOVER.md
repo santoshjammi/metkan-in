@@ -2,7 +2,14 @@
 
 **Project root:** `/Users/santosh/Desktop/projects/MITT/website`
 **Status:** demonstrable and commercially usable. **Not launch-ready** — see `docs/LAUNCH-CHECKLIST.md`.
-**Scope:** this is a marketing website only. It is not the worker-registry application, and it shares no code or data with `../worker-registry-mvp/`.
+**Scope:** this deliverable is the marketing website only. It is not, and must never be, the internal
+platform MITT uses to run recruitment operations. It shares no code, no data and no deployment path with
+it, and nothing in this repository references it.
+
+**Disclosure boundary (binding):** the internal application is private, is still being built, and must
+not be shown, linked, described or deployed to anyone outside MITT. This repository is standalone; it
+can be handed to a developer or a host without disclosing anything about that platform. `bash
+scripts/check-boundary.sh` enforces this and fails if the boundary is broken.
 
 ---
 
@@ -58,7 +65,14 @@ The footer, `/contact` and `/about` all switch from the "pending confirmation" c
 
 **If the store fails, the API returns `503` and the page tells the user to call instead.** It never fakes success. Verified.
 
-**Notifications: not configured.** Nothing is emailed to anyone today. If `MITT_NOTIFY_WEBHOOK` is set, the API POSTs the record after a successful write (5 s timeout, non-fatal). SMTP is not implemented. **Configure one of these before launch, or enquiries will sit on disk unseen** — this is the single biggest operational gap (checklist item C1/C2).
+**Notifications:** implemented and verified. After a successful persist the API calls `notifyEnquiry()`,
+which delivers by **SMTP** (`MITT_SMTP_*` + `MITT_NOTIFY_TO`) or **webhook** (`MITT_NOTIFY_WEBHOOK`).
+A delivery failure never fails the enquiry — it is already stored, and the response reports
+`notified: false`. **Neither channel is configured yet**, so enquiries are stored but nobody is emailed.
+`npm run preflight` refuses to pass until one is set.
+
+Health probe: `GET /api/health` returns `{ ok, leadStoreWritable, notifyConfigured, siteUrlConfigured }`
+and 503 if the lead store is unwritable — point an uptime monitor at it.
 
 Reading leads:
 
@@ -74,6 +88,9 @@ npm run lint                          # eslint
 npm run test                          # 47 unit tests (validation, rate limit, references, persistence)
 npx playwright test                   # 19 browser tests run across desktop + mobile projects (38 executions)
 node tests/a11y-audit.mjs             # axe across 11 routes x 2 viewports
+npm run preflight                     # launch gate: exits 1 on any blocker
+npm run boundary                      # proves the internal app is unreachable/undisclosed
+npm run backup:leads                  # archive + checksum + verify the lead store
 ```
 
 `node tests/a11y-audit.mjs` needs a server running; point it with `AXE_BASE=http://localhost:3220`.

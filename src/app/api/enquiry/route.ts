@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { persistEnquiry, type EnquiryRecord } from "@/lib/leads";
+import { notifyEnquiry, type NotifyResult } from "@/lib/notify";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { newReference } from "@/lib/reference";
 import { isLikelyBot, parseEnquiry } from "@/lib/validation";
@@ -13,7 +14,8 @@ import { isLikelyBot, parseEnquiry } from "@/lib/validation";
  *   3. rate limit (per IP)   → 429 + Retry-After
  *   4. schema parse          → 400 with a field-keyed error map
  *   5. durable append        → 503 store_unavailable on failure
- *   6. 201 { ok: true, reference }
+ *   6. notify staff          → never changes the status code
+ *   7. 201 { ok: true, reference, notified }
  *
  * Design choices, documented rather than implicit:
  *  - Bot traps answer with one generic message and a 400 rather than a fake
@@ -24,7 +26,13 @@ import { isLikelyBot, parseEnquiry } from "@/lib/validation";
  *  - The rate limiter runs before schema validation, so a bot that keeps posting
  *    broken payloads still burns its allowance; the bot traps run before both, so
  *    a bot never consumes a real employer's allowance.
- *  - No PII in any log line: only the reference, the timestamp and `orgType`.
+ *  - Notification happens only after the record is durably on disk, and is a
+ *    bonus rather than a precondition: if the relay is down the enquiry is still
+ *    accepted, because it is already stored and readable. Failing the request
+ *    would push the employer to resubmit and store a duplicate.
+ *  - The notify step is bounded at 6s so a wedged relay cannot hold the response
+ *    open on an employer who is waiting for their reference number.
+ *  - No PII in any log line: only the reference, the channel and a short status.
  */
 
 export const runtime = "nodejs";
@@ -42,6 +50,9 @@ const RATE_LIMITED =
 
 const MALFORMED =
   "We couldn't read that request. Please reload the page and submit the form again.";
+
+/** Total wall-clock budget for the notification step. */
+const NOTIFY_BUDGET_MS = 6000;
 
 function reply(
   body: Record<string, unknown>,
@@ -71,29 +82,24 @@ function clientKey(request: Request): string {
 }
 
 /**
- * Optional operator notification. Runs only after a durable write, is awaited
- * with a 5s ceiling, and can never fail the request. Logs carry no PII.
+ * Run the notifier with a hard ceiling. `notifyEnquiry` never rejects, so a
+ * losing race leaves no unhandled rejection behind: the loser finishes on its own
+ * and its result is simply discarded.
  */
-async function notifyWebhook(record: EnquiryRecord): Promise<void> {
-  const url = process.env.MITT_NOTIFY_WEBHOOK?.trim();
-  if (!url) return;
+async function notifyWithinBudget(record: EnquiryRecord): Promise<NotifyResult> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  const budget = new Promise<NotifyResult>((resolve) => {
+    timer = setTimeout(
+      () => resolve({ ok: false, channel: "none", error: "budget_exceeded" }),
+      NOTIFY_BUDGET_MS,
+    );
+  });
 
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(record),
-      signal: AbortSignal.timeout(5000),
-    });
-
-    if (!response.ok) {
-      console.warn(
-        `[enquiry] notify_failed ref=${record.reference} status=${response.status}`,
-      );
-    }
-  } catch (error) {
-    const reason = error instanceof Error ? error.name : "unknown";
-    console.warn(`[enquiry] notify_failed ref=${record.reference} reason=${reason}`);
+    return await Promise.race([notifyEnquiry(record), budget]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
 
@@ -170,10 +176,19 @@ export async function POST(request: Request): Promise<NextResponse> {
     `[enquiry] stored ref=${reference} at=${receivedAt} orgType=${record.orgType}`,
   );
 
-  /* 6 — optional notification, after success is already durable --------- */
-  await notifyWebhook(record);
+  /* 6 — notify staff. The enquiry is already durable: this cannot fail it. */
+  const notification = await notifyWithinBudget(record);
 
-  return reply({ ok: true, reference }, 201);
+  if (notification.ok) {
+    console.info(`[enquiry] notified ref=${reference} channel=${notification.channel}`);
+  } else {
+    console.warn(
+      `[enquiry] notify_failed ref=${reference} channel=${notification.channel} reason=${notification.error ?? "unknown"}`,
+    );
+  }
+
+  /* 7 — success. `notified` is additive; the rest of the shape is unchanged. */
+  return reply({ ok: true, reference, notified: notification.ok }, 201);
 }
 
 /** Explicit rather than implicit: this endpoint accepts POST only. */

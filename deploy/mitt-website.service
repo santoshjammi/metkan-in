@@ -1,0 +1,51 @@
+# MITT website - systemd unit for a plain Node host (no Docker)
+#
+#   sudo cp deploy/mitt-website.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now mitt-website
+#
+# Expects the repo at /srv/mitt-website, built with `npm run build`,
+# and a root-only env file at /etc/mitt-website.env (mode 0600).
+
+[Unit]
+Description=MITT marketing website (Next.js)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mitt
+Group=mitt
+WorkingDirectory=/srv/mitt-website
+
+# Secrets stay out of the unit file. Must be chmod 0600, owned by root.
+EnvironmentFile=/etc/mitt-website.env
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=MITT_LEAD_DIR=/var/lib/mitt/enquiries
+
+ExecStart=/usr/bin/node node_modules/next/dist/bin/next start -p 3000
+Restart=always
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Hardening: the process needs to write only the lead store.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/mitt
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+
+# Modest box, modest limits: the site is static plus one tiny API route.
+MemoryMax=768M
+TasksMax=256
+
+[Install]
+WantedBy=multi-user.target
