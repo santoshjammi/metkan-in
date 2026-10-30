@@ -22,14 +22,15 @@ export const site = {
   country: "India",
   /** Verified: Visakhapatnam, Andhra Pradesh. Street address is NOT verified — do not add one. */
   locationLine: "Visakhapatnam, Andhra Pradesh, India",
-  /** Placeholders. Non-routable by design so nothing can be sent to a wrong recipient. */
+  /** Owner-supplied 2026-10-30. `href` is empty for email until an inbox exists. */
   phone: {
-    display: "+91 XXXXX XXXXX",
-    href: "",
-    placeholder: true,
+    display: "+91 74163 42020",
+    href: "tel:+917416342020",
+    placeholder: false,
+    source: "Owner, 2026-10-30",
   },
   email: {
-    display: "enquiries@mitt.example",
+    display: "Enquiries email pending confirmation",
     href: "",
     placeholder: true,
   },

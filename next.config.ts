@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   images: {
     // Local-only assets under /public/media. No remote patterns are permitted.
     formats: ["image/avif", "image/webp"],
+    // Next 16 coerces next/image `quality` to the nearest allowed value;
+    // 86 is the grade used for the hero still.
+    qualities: [75, 86],
   },
 };
 

@@ -19,10 +19,10 @@ Nothing on this list is optional. The site is **not launchable** until every ite
 
 | # | Item | Current state |
 |---|---|---|
-| B1 | Verified phone number | `+91 XXXXX XXXXX` — placeholder, deliberately non-routable |
-| B2 | Verified enquiries email (and whether it is monitored daily) | `enquiries@mitt.example` — placeholder |
+| B1 | Verified phone number | **RESOLVED 2026-10-30** — owner supplied `+91 74163 42020` (renders as `tel:+917416342020`). Recorded in `src/content/site.ts`. |
+| B2 | Verified enquiries email (and whether it is monitored daily) | **Outstanding** — renders as "Enquiries email pending confirmation". The enquiry form does not depend on it (submissions persist server-side), but a public inbox is expected on a B2B site. |
 | B3 | Full street address + Google Maps location, if it may be published | Only "Visakhapatnam, Andhra Pradesh, India" is published — no street line |
-| B4 | WhatsApp business number, if approved | Omitted entirely (no placeholder link is rendered) |
+| B4 | WhatsApp business number, if approved | Omitted entirely (no placeholder link is rendered). The new landline/mobile has **not** been confirmed as a WhatsApp Business line — do not add a `wa.me` link until MITT says so. |
 | B5 | Logo files (SVG + reversed) | Typographic wordmark used instead |
 | B6 | Domain name | Not yet known; `NEXT_PUBLIC_SITE_URL` must be set before SEO metadata is correct |
 
