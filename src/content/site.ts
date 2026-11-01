@@ -13,7 +13,9 @@ export const site = {
   legalName: "Metkan Institute for Technical Training",
   shortLegalName: "Metkan Institute for Technical Training",
   positioning: "Technical training, skilled-worker screening and coordinated employer hiring.",
-  brandLine: "Connecting skilled people with real opportunities.",
+  /** MITT's own tagline, from its published flyer (docs/FACTS-FROM-FLYER.md F1). */
+  tagline: "Forging Futures. Building Careers.",
+  brandLine: "Forging Futures. Building Careers.",
   heroHeadline: "Skilled Hands. Stronger Industries.",
   heroSupport:
     "MITT supports technical training, skilled-worker screening and coordinated employer hiring processes.",
@@ -44,10 +46,21 @@ export const site = {
     source: "Owner, 2026-10-30",
   },
   email: {
-    display: "Enquiries email pending confirmation",
-    href: "",
-    placeholder: true,
+    display: "mittvizag@gmail.com",
+    href: "mailto:mittvizag@gmail.com",
+    placeholder: false,
+    source: "MITT published flyer, 2026-11-01",
   },
+  /** Also published by MITT. Offered as a second route, not as the default. */
+  secondaryEmail: {
+    display: "metkanengg@gmail.com",
+    href: "mailto:metkanengg@gmail.com",
+  },
+  /** Additional published numbers, in the order MITT prints them. */
+  secondaryPhones: [
+    { display: "+91 98496 77007", href: "tel:+919849677007" },
+    { display: "+91 93926 77009", href: "tel:+919392677009" },
+  ],
   /** No approved WhatsApp business number exists. Keep null — do not render a WhatsApp link. */
   whatsapp: null as string | null,
   /** No verified social profiles. Keep empty — footer must render nothing for this. */

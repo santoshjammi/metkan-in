@@ -1,11 +1,9 @@
 import Image from "next/image";
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import {
-  trainingAreas,
-  trainingImage,
-  trainingNote,
-} from "@/content/training";
+import { facilityCaption, facilityPhotos } from "@/content/facility";
+import { programmes, programmeNote } from "@/content/programmes";
 import { cta } from "@/content/site";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -25,15 +23,17 @@ const toneClasses: Record<
     title: string;
     body: string;
     caption: string;
+    rule: string;
   }
 > = {
   dark: {
     line: "border-line",
-    plate: "border-line bg-graphite",
+    plate: "border-line bg-graphite-2",
     numeral: "text-copper-hi",
     title: "text-ivory",
     body: "copy",
     caption: "text-steel-hi",
+    rule: "bg-copper",
   },
   light: {
     line: "border-line-ink",
@@ -42,6 +42,7 @@ const toneClasses: Record<
     title: "text-text-dark",
     body: "copy-ink",
     caption: "text-steel-ink",
+    rule: "bg-copper",
   },
 };
 
@@ -51,14 +52,17 @@ export interface TrainingPanelProps {
 }
 
 /**
- * Training act. The facility still carries its disclosure caption everywhere it
- * appears — it is illustrative, and the page says so.
+ * The workshop aisle is a genuine MITT photograph, 363x363 at source. The plate
+ * is capped at that native width so it is never upscaled, and the caption says
+ * plainly whose facility it is rather than carrying an "illustrative" caveat.
  *
- * Composition is an even lg split so the photograph fills its column at 4:3
- * instead of shrinking to a square thumbnail beside a wall of text. The
- * disclosure sits directly beneath the plate, as a caption rather than a
- * floating note.
+ * The five programmes come straight from `src/content/programmes.ts`; the panel
+ * shows each one's published duration and defers the detail to /training.
  */
+const boothPhoto = facilityPhotos.find((photo) =>
+  photo.src.endsWith("/booths-aisle.jpg"),
+);
+
 export function TrainingPanel({
   tone = "dark",
   className,
@@ -72,39 +76,40 @@ export function TrainingPanel({
         className,
       )}
     >
-      <figure>
-        <div
-          className={cn(
-            "relative aspect-[4/3] w-full overflow-hidden border",
-            t.plate,
-          )}
-        >
-          <Image
-            src={trainingImage.src}
-            alt={trainingImage.alt}
-            width={trainingImage.width}
-            height={trainingImage.height}
-            sizes="(min-width: 1024px) 48vw, 100vw"
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <figcaption
-          className={cn("meta mt-3 flex items-start gap-2 text-[0.8125rem] leading-[1.55]", t.caption)}
-        >
-          <Info
-            aria-hidden="true"
-            size={13}
-            strokeWidth={1.6}
-            className="mt-[0.2em] shrink-0"
-          />
-          {trainingImage.disclosure}
-        </figcaption>
-      </figure>
+      {boothPhoto ? (
+        <figure>
+          <div
+            className={cn("w-full border", t.plate)}
+            style={{ maxWidth: boothPhoto.nativeWidth }}
+          >
+            <Image
+              src={boothPhoto.src}
+              alt={boothPhoto.alt}
+              width={boothPhoto.width}
+              height={boothPhoto.height}
+              unoptimized
+              className="h-auto w-full"
+            />
+          </div>
+          <figcaption
+            className={cn(
+              "meta mt-3 flex max-w-[44ch] items-start gap-2 text-[0.8125rem] leading-[1.55]",
+              t.caption,
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className={cn("mt-[0.55rem] h-px w-4 shrink-0", t.rule)}
+            />
+            {facilityCaption}
+          </figcaption>
+        </figure>
+      ) : null}
 
       <div>
         <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-1 lg:gap-y-5 xl:grid-cols-2">
-          {trainingAreas.map((area, index) => (
-            <li key={area.title} className={cn("border-t pt-4", t.line)}>
+          {programmes.map((programme) => (
+            <li key={programme.slug} className={cn("border-t pt-4", t.line)}>
               <p
                 aria-hidden="true"
                 className={cn(
@@ -112,23 +117,32 @@ export function TrainingPanel({
                   t.numeral,
                 )}
               >
-                {String(index + 1).padStart(2, "0")}
+                {programme.index}
               </p>
-              <h3
-                className={cn(
-                  "mt-2 font-display text-[1.125rem] font-medium leading-snug",
-                  t.title,
-                )}
-              >
-                {area.title}
-              </h3>
-              <p className={cn("mt-1.5 max-w-[42ch]", t.body)}>{area.body}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                <h3
+                  className={cn(
+                    "font-display text-[1.0625rem] font-medium leading-snug",
+                    t.title,
+                  )}
+                >
+                  {programme.title}
+                </h3>
+                {programme.custom ? (
+                  <Badge tone={tone === "dark" ? "copperOnDark" : "copper"}>
+                    Bespoke
+                  </Badge>
+                ) : null}
+              </div>
+              <p className={cn("mt-1.5 text-[0.85rem]", t.body)}>
+                {programme.duration}
+              </p>
             </li>
           ))}
         </ul>
 
         <p className={cn("mt-8 max-w-[62ch] border-t pt-4", t.line, t.body)}>
-          {trainingNote}
+          {programmeNote}
         </p>
 
         <div className="mt-6">

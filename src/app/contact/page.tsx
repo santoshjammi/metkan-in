@@ -116,6 +116,19 @@ export default function ContactPage() {
                     />
                     {site.phone.display}
                   </a>
+                  {/* The two additional numbers MITT publishes, in its own order. */}
+                  <ul className="mt-3 space-y-1.5">
+                    {site.secondaryPhones.map((phone) => (
+                      <li key={phone.href}>
+                        <a
+                          href={`tel:${phone.display.replace(/[^+\d]/g, "")}`}
+                          className="text-[0.9375rem] text-ivory/85 underline decoration-ivory/25 decoration-1 underline-offset-[0.3em] transition-colors duration-200 hover:text-copper-hi hover:decoration-copper-hi"
+                        >
+                          {phone.display}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </dd>
               </div>
 
@@ -149,15 +162,24 @@ export default function ContactPage() {
                   Email
                 </dt>
                 <dd className="mt-2">
-                  {/*
-                    No approved inbox exists yet. `placeholder: true` in content
-                    is the whole reason this renders as a state and not a link —
-                    inventing an address would be a fabricated fact.
-                  */}
-                  <span className="pending-chip">Pending confirmation</span>
+                  {/* Both addresses are MITT's own published inboxes. */}
+                  <a
+                    href={site.email.href}
+                    className="text-[1.0625rem] font-medium text-ivory underline decoration-ivory/30 decoration-1 underline-offset-[0.3em] transition-colors duration-200 hover:text-copper-hi hover:decoration-copper-hi"
+                  >
+                    {site.email.display}
+                  </a>
+                  <p className="mt-2 text-[0.9375rem] leading-relaxed">
+                    <a
+                      href={site.secondaryEmail.href}
+                      className="text-steel-hi underline decoration-steel-hi/40 decoration-1 underline-offset-[0.25em] transition-colors duration-200 hover:text-copper-hi hover:decoration-copper-hi"
+                    >
+                      {site.secondaryEmail.display}
+                    </a>
+                  </p>
                   <p className="meta mt-3 max-w-[38ch] text-steel-hi">
-                    An enquiries inbox has not been confirmed yet, so no address is
-                    published. Use the form or the telephone number until it is.
+                    MITT publishes both addresses. Either reaches the same
+                    enquiry review as the form.
                   </p>
                 </dd>
               </div>

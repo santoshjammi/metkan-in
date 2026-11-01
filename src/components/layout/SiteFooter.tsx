@@ -1,20 +1,19 @@
 import Link from "next/link";
 import { nav, site } from "@/content/site";
-import { heroMedia } from "@/content/evidence";
 
-/** Wider than the literal union in `site`, so the flag — not the call site — decides. */
+/** Wider than the literal union in `site`, so the flag - not the call site - decides. */
 interface ContactEntry {
   display: string;
   href: string;
-  placeholder: boolean;
+  placeholder?: boolean;
 }
 
 /**
  * A contact value renders from its own flag, so swapping a placeholder for a
- * confirmed number is a content change and nothing else:
+ * confirmed value is a content change and nothing else:
  *
- * - confirmed (`placeholder: false` with an href) → a real, routable link;
- * - unconfirmed → an intentional uppercase chip. Never a fake value styled
+ * - confirmed (`placeholder: false` with an href) -> a real, routable link;
+ * - unconfirmed -> an intentional uppercase chip. Never a fake value styled
  *   like a link, never underlined, never an href.
  */
 function ContactValue({ entry }: { entry: ContactEntry }) {
@@ -39,6 +38,20 @@ function ContactValue({ entry }: { entry: ContactEntry }) {
     </dd>
   );
 }
+
+/**
+ * `site.phone.href` is stored masked in content, so the dialable URI is derived
+ * from the published display number - same rule /contact and /about use.
+ */
+const telHref = (display: string) => `tel:${display.replace(/[^+\d]/g, "")}`;
+
+/**
+ * The hero still is representative trade imagery, but the facility photographs
+ * on /training and /about are MITT's own - so the legal row has to say both
+ * things rather than claim no photograph on the site is theirs.
+ */
+const mediaDisclaimer =
+  "The hero image is representative trade photography, not a photograph of MITT workers or facilities. Facility photographs on this site are MITT's own.";
 
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -84,13 +97,39 @@ export function SiteFooter() {
               <dt className="text-[0.78125rem] uppercase tracking-[0.14em] text-steel-hi">
                 Telephone
               </dt>
-              <ContactValue entry={site.phone} />
+              <ContactValue
+                entry={{ ...site.phone, href: telHref(site.phone.display) }}
+              />
+              <dd className="mt-2">
+                <ul className="space-y-1">
+                  {site.secondaryPhones.map((phone) => (
+                    <li key={phone.href}>
+                      <a
+                        href={telHref(phone.display)}
+                        className="text-[0.9375rem] text-ivory/85 underline decoration-ivory/25 decoration-1 underline-offset-[0.25em] transition-colors duration-200 hover:text-copper-hi hover:decoration-copper-hi"
+                      >
+                        {phone.display}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
             </div>
             <div>
               <dt className="text-[0.78125rem] uppercase tracking-[0.14em] text-steel-hi">
                 Email
               </dt>
               <ContactValue entry={site.email} />
+              {site.secondaryEmail.href.length > 0 ? (
+                <dd className="mt-2">
+                  <a
+                    href={site.secondaryEmail.href}
+                    className="text-[0.9375rem] text-ivory/85 underline decoration-ivory/25 decoration-1 underline-offset-[0.25em] transition-colors duration-200 hover:text-copper-hi hover:decoration-copper-hi"
+                  >
+                    {site.secondaryEmail.display}
+                  </a>
+                </dd>
+              ) : null}
             </div>
             <div>
               <dt className="text-[0.78125rem] uppercase tracking-[0.14em] text-steel-hi">
@@ -111,9 +150,9 @@ export function SiteFooter() {
 
       <div className="border-t border-line">
         <div className="shell flex flex-col gap-3 py-7 text-[0.78125rem] leading-relaxed text-steel-hi md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-x-8">
-          <p className="max-w-[52ch]">{heroMedia.disclaimer}</p>
+          <p className="max-w-[52ch]">{mediaDisclaimer}</p>
           <p>
-            © {year} {site.legalName}. All rights reserved.
+            &copy; {year} {site.legalName}. All rights reserved.
           </p>
           <p>{site.technologyPartner.attribution}.</p>
         </div>

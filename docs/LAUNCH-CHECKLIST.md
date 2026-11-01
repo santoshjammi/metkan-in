@@ -10,9 +10,9 @@ Nothing on this list is optional. The site is **not launchable** until every ite
 | A2 | Confirm which trade categories MITT can *actually* supply today (the site lists 7 and marks all as "confirm-required") | Listing a category implies capability | **BLOCKER** for confident copy; site currently hedges explicitly |
 | A3 | Confirm the published process (8 stages) matches actual practice, especially stages 06–08 | Misstating process invites disputes | Required |
 | A4 | Confirm there are no certification, affiliation, government-scheme or accreditation claims to publish (none are published today) | Unsupported accreditation claims are a regulatory risk in India | Required — currently **nothing** is claimed |
-| A5 | Confirm position on overseas recruitment: any content referencing it must name the authorised partner arrangement and be legally reviewed | Overseas recruitment advertising is regulated (Emigration Act, RA licensing) | Required — site currently says international activity is via authorised partners only, with no promise of visas/approvals |
+| A5 | Confirm position on overseas recruitment: any content referencing it must name the authorised partner arrangement and be legally reviewed | Overseas recruitment advertising is regulated (Emigration Act 1983, RA licensing). **MITT's flyer advertises overseas placement and "visa processing and related formalities", and states 100,000+ candidates placed overseas.** The site now describes this as MITT's stated service, coordinated through travel-agency partners, and **claims no licence or authorisation**. Owner must confirm what may be published and whether an RA licence exists. See `docs/FACTS-FROM-FLYER.md` C1–C3. **BLOCKER for the overseas copy specifically.** |
 | A6 | Confirm fee disclosure position (does MITT charge employers, workers, or neither?) | Fee-related statements are regulated and frequently complained about | Required — site currently states it collects no fees through the website |
-| A7 | Approve the tagline "Skilled Hands. Stronger Industries." and brand line "Connecting skilled people with real opportunities." | Both are proposed marketing language, not approved brand | Required |
+| A7 | Approve the tagline used on the site | **Partially resolved** — the brand line is now MITT's own published tagline, "Forging Futures. Building Careers." The homepage H1 "Skilled Hands. Stronger Industries." is still my proposed headline and needs approval (or replacement with the tagline). | Required |
 | A8 | Approve the "Website engineered by Sai Ameya Technologies LLP" footer attribution | Sai Ameya is the technology partner, not MITT's parent brand | Required |
 
 ## B. Contact & identity (BLOCKERs)
@@ -20,10 +20,11 @@ Nothing on this list is optional. The site is **not launchable** until every ite
 | # | Item | Current state |
 |---|---|---|
 | B1 | Verified phone number | **RESOLVED 2026-10-30** — owner supplied `+91 74163 42020` (renders as `tel:+917416342020`). Recorded in `src/content/site.ts`. |
-| B2 | Verified enquiries email (and whether it is monitored daily) | **Outstanding** — renders as "Enquiries email pending confirmation". The enquiry form does not depend on it (submissions persist server-side), but a public inbox is expected on a B2B site. |
+| B2 | Verified enquiries email (and whether it is monitored daily) | **RESOLVED 2026-11-01** — MITT's published flyer gives `mittvizag@gmail.com` (primary) and `metkanengg@gmail.com`. Both are now real `mailto:` links. **Open question:** a Gmail address is fine to publish but looks less credible on a B2B page than a domain address (`enquiries@metkan…`). If a domain inbox is set up later, change `site.email` — the UI follows automatically. |
+| B2b | Additional phone numbers | **RESOLVED** — flyer publishes `+91 98496 77007` and `+91 93926 77009` in addition to the primary number. All three render. |
 | B3 | Full street address + Google Maps location, if it may be published | **RESOLVED 2026-10-30** — `A-3, B Block, Autonagar, Visakhapatnam 530012, Andhra Pradesh, India`. Pincode↔locality verified against public postal records. Held structurally in `site.address`; Maps link is a search URL, not a claimed verified pin. |
 | B4 | WhatsApp business number, if approved | Omitted entirely (no placeholder link is rendered). The new landline/mobile has **not** been confirmed as a WhatsApp Business line — do not add a `wa.me` link until MITT says so. |
-| B5 | Logo files (SVG + reversed) | Typographic wordmark used instead |
+| B5 | Logo files (SVG + reversed) | **Partially resolved** — the METKAN mark was extracted from the flyer's PDF, cleaned and de-plated into `logo-symbol.png` (blue on light) and `logo-symbol-reverse.png` (ivory on dark), 746×496 with transparency. It is a raster upscale of a 239×179 source, so it is clean at header size but **still needs a real vector (SVG/AI) file** before it is used at large sizes. |
 | B6 | Domain name | Not yet known; `NEXT_PUBLIC_SITE_URL` must be set before SEO metadata is correct |
 
 ## C. Enquiry handling (operational, BLOCKER)

@@ -7,15 +7,19 @@ import { Reveal } from "@/components/cinematic/Reveal";
 import { RevealObserver } from "@/components/cinematic/RevealObserver";
 import { Button } from "@/components/ui/Button";
 import { CTABand } from "@/components/marketing/CTABand";
+import { BrochureCard } from "@/components/marketing/BrochureCard";
 import { CapabilityGrid } from "@/components/marketing/CapabilityGrid";
 import {
   EditorialPanels,
   type EditorialPanelItem,
 } from "@/components/marketing/EditorialPanels";
 import { EvidencePanel } from "@/components/marketing/EvidencePanel";
+import { FacilityGallery } from "@/components/marketing/FacilityGallery";
+import { HeritageLine } from "@/components/marketing/HeritageLine";
 import { ProcessTimeline } from "@/components/marketing/ProcessTimeline";
 import { Section } from "@/components/marketing/Section";
 import { SectionHeading } from "@/components/marketing/SectionHeading";
+import { StatBand } from "@/components/marketing/StatBand";
 import { TrainingPanel } from "@/components/marketing/TrainingPanel";
 import { evidenceHeading, evidenceIntro } from "@/content/evidence";
 import {
@@ -125,6 +129,9 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* -- The numbers band: MITT's own published figures, attributed ----- */}
+      <StatBand />
+
       {/* ── Act 2 — The people behind industry ───────────────────────────── */}
       <Section tone="light" aria-labelledby="people-heading">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
@@ -158,6 +165,9 @@ export default function HomePage() {
         />
         <CapabilityGrid className="mt-12" />
       </Section>
+
+      {/* -- Heritage strip: why the capabilities are credible -------------- */}
+      <HeritageLine />
 
       {/* ── Act 4 — Process ──────────────────────────────────────────────── */}
       <Section tone="light" aria-labelledby="process-heading">
@@ -209,21 +219,28 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* ── Act 6 — Evidence ─────────────────────────────────────────────── */}
+      {/* -- Act 6 - The facility, in its own photographs -------------------- */}
+      <FacilityGallery index="06" />
+
+      {/* ── Act 7 — Evidence ─────────────────────────────────────────────── */}
       <Section tone="light" aria-labelledby="evidence-heading">
         <SectionHeading
           id="evidence-heading"
           eyebrow="Evidence"
-          index="06"
+          index="07"
           tone="light"
           title={evidenceHeading}
           lede={evidenceIntro}
         />
         <EvidencePanel tone="light" />
+
+        {/* A real document, offered where the page is otherwise asking to be
+            trusted on method alone. */}
+        <BrochureCard tone="light" className="mt-12" />
       </Section>
 
-      {/* ── Act 7 — Conversion ───────────────────────────────────────────── */}
-      <CTABand index="07" />
+      {/* ── Act 8 — Conversion ───────────────────────────────────────────── */}
+      <CTABand index="08" />
     </>
   );
 }

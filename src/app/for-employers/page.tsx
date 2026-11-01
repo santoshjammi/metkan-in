@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { BrochureCard } from "@/components/marketing/BrochureCard";
 import { CTABand } from "@/components/marketing/CTABand";
+import { HeritageLine } from "@/components/marketing/HeritageLine";
 import { PageHero } from "@/components/marketing/PageHero";
 import { Section } from "@/components/marketing/Section";
 import { SectionHeading } from "@/components/marketing/SectionHeading";
+import { TestingPanel } from "@/components/marketing/TestingPanel";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { faqPageJsonLd } from "@/lib/seo";
 import { capabilities, capabilityNote } from "@/content/capabilities";
@@ -232,6 +235,10 @@ export default function ForEmployersPage() {
             </ol>
           </div>
         </div>
+
+        {/* Testing is the part of the process an employer feels first: skill is
+            assessed on the work before an interview is committed to. */}
+        <TestingPanel />
       </Section>
 
       {/* ── 05 — Engagement model ────────────────────────────────────────── */}
@@ -303,6 +310,9 @@ export default function ForEmployersPage() {
           </Button>
         </div>
       </Section>
+
+      {/* -- Heritage strip: the standing behind the evidence ---------------- */}
+      <HeritageLine />
 
       {/* ── 06 — Credibility, honestly ───────────────────────────────────── */}
       <Section tone="light" aria-labelledby="evidence-heading">
@@ -385,6 +395,15 @@ export default function ForEmployersPage() {
             </p>
           </div>
         </div>
+      </Section>
+
+      {/* -- The download: a real document, offered before the ask ------------ */}
+      <Section
+        tone="light"
+        aria-label="Capability brochure"
+        className="border-t border-line-ink py-14 sm:py-16"
+      >
+        <BrochureCard tone="light" headingLevel="h2" />
       </Section>
 
       <CTABand

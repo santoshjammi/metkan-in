@@ -49,7 +49,7 @@ export const evidencePoints: { title: string; body: string }[] = [
 export const evidenceHeading = "What MITT can evidence";
 
 export const evidenceIntro =
-  "This website publishes no testimonials, client logos or placement statistics, because none have been approved for publication. What MITT can evidence, it evidences directly: method, capability and process, in a conversation with your team.";
+  "This website publishes no client names, testimonials or logos, because none have been approved for publication. The figures shown earlier are MITT's own published numbers. What a conversation adds is the part a website cannot: method, trade-testing capability and process, evidenced directly with your team.";
 
 export const evidenceEmptyState = {
   title: "Client references",

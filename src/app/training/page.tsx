@@ -1,25 +1,41 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { CTABand } from "@/components/marketing/CTABand";
 import { FAQAccordion } from "@/components/marketing/FAQAccordion";
 import { PageHero } from "@/components/marketing/PageHero";
+import { ProgrammeList } from "@/components/marketing/ProgrammeList";
 import { Section } from "@/components/marketing/Section";
 import { SectionHeading } from "@/components/marketing/SectionHeading";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/Button";
 import { trainingFaqs } from "@/content/faqs";
+import {
+  facilityCaption,
+  facilityHeadline,
+  facilityIntro,
+  facilityPhotos,
+  facilityPoints,
+} from "@/content/facility";
+import { programmeIntro, programmeNote } from "@/content/programmes";
 import { cta } from "@/content/site";
-import { trainingAreas, trainingImage, trainingIntro, trainingNote } from "@/content/training";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
   title: "Training & preparation",
   description:
-    "Practical training and preparation at MITT in Visakhapatnam: workshop skill development, welding preparation, workplace practices, safety orientation and employer-specific preparation.",
+    "MITT's five practical programmes in Visakhapatnam: Structural Welding, Pipe Welding Mastery, Industrial Pipe Fitter, Structural Fitter / Fabricator and custom corporate upskilling - welding, pipe fitting and structural fabrication taught in a fourteen-booth workshop.",
   path: "/training",
 });
+
+/**
+ * The workshop overview is the only facility photograph used here. It is a
+ * genuine 486x567 photograph, so the plate is capped at its native width and
+ * `unoptimized` keeps the optimiser from generating a wider derivative.
+ */
+const workshopPhoto = facilityPhotos.find((photo) =>
+  photo.src.endsWith("/workshop-overview.jpg"),
+);
 
 export default function TrainingPage() {
   return (
@@ -32,108 +48,116 @@ export default function TrainingPage() {
         ])}
       />
 
-      {/* The full `trainingIntro` opens the body act below, where there is room
-          for it; the hero carries the short form so the two do not repeat. */}
       <PageHero
         eyebrow="Training"
         title="Training is the front half of hiring."
-        lede="Practical preparation for the trades an employer actually needs, aligned to how a site or shop floor runs."
+        lede="Five programmes taught in a working workshop: welding, pipe fitting and structural fabrication, for beginners, working professionals and people upskilling in a new process."
         cta={{ label: cta.primaryShort, href: "/contact" }}
         secondary={{ label: "See the trade categories", href: "/capabilities" }}
         meta={{
           label: "On this page",
           items: [
-            "Six preparation areas",
-            "The workshop setting",
+            "The five programmes",
+            "The workshop and booths",
             "What is not claimed",
             "Questions employers ask",
           ],
         }}
       />
 
-      {/* ── 01 — Preparation areas ───────────────────────────────────────── */}
-      <Section tone="light" aria-labelledby="preparation-heading">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
-          <div className="lg:col-span-5">
-            <SectionHeading
-              id="preparation-heading"
-              eyebrow="Preparation"
-              index="01"
-              tone="light"
-              title="Six areas of practical preparation."
-              lede={trainingIntro}
-            />
-            <p className="copy-ink mt-4 max-w-[40ch] text-[0.95rem]">
-              Each area is aligned to what an employer’s process and site
-              actually require, not to a fixed syllabus published in advance.
-            </p>
-          </div>
+      {/* -- 01 -- The five published programmes --------------------------- */}
+      <Section tone="light" aria-labelledby="programmes-heading">
+        <SectionHeading
+          id="programmes-heading"
+          eyebrow="Programmes"
+          index="01"
+          tone="light"
+          title="Five programmes, taught in a working workshop."
+          lede={programmeIntro}
+        />
 
-          <figure className="lg:col-span-7">
-            <div className="relative overflow-hidden border border-line-ink">
-              <Image
-                src={trainingImage.src}
-                alt={trainingImage.alt}
-                width={trainingImage.width}
-                height={trainingImage.height}
-                sizes="(min-width: 1240px) 700px, (min-width: 1024px) 58vw, 100vw"
-                className="h-full w-full object-cover"
-              />
-            </div>
-            {/* Required disclosure: the image is not a MITT facility photograph. */}
-            <figcaption className="meta mt-3 flex items-start gap-2 text-steel-ink">
-              <span
-                aria-hidden="true"
-                className="mt-[0.55rem] h-px w-4 shrink-0 bg-copper-ink"
-              />
-              {trainingImage.disclosure}
-            </figcaption>
-          </figure>
-        </div>
+        <ProgrammeList tone="light" />
 
-        <ol className="mt-12 grid gap-x-10 gap-y-8 border-t border-line-ink pt-8 md:grid-cols-2 lg:grid-cols-3">
-          {trainingAreas.map((area, index) => (
-            <li key={area.title}>
-              <span
-                aria-hidden="true"
-                className="font-display text-[0.72rem] font-medium tracking-[0.18em] tabular-nums text-copper-ink"
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <h3 className="mt-2 font-display text-[1.1rem] font-medium leading-snug text-text-dark">
-                {area.title}
-              </h3>
-              <p className="copy-ink mt-2 text-[0.95rem]">{area.body}</p>
-            </li>
-          ))}
-        </ol>
-
-        <p className="copy-ink mt-10 max-w-[64ch] border-t border-line-ink pt-6">
-          Preparation is scheduled where a requirement justifies it — it is part
-          of stage 06 of{" "}
-          <Link
-            href="/our-process"
-            className="link-line text-text-dark underline decoration-line-ink decoration-1 underline-offset-[0.3em]"
-          >
-            the engagement process
-          </Link>
-          , not a separate enrolment.
+        <p className="copy-ink mt-8 max-w-[70ch] border-l-2 border-copper pl-4">
+          {programmeNote}
         </p>
       </Section>
 
-      {/* ── 02 — Questions, and what is not claimed ──────────────────────── */}
+      {/* -- 02 -- The facility the training actually runs in --------------- */}
+      <Section tone="graphite" aria-labelledby="facility-heading">
+        <SectionHeading
+          id="facility-heading"
+          eyebrow="Facility"
+          index="02"
+          title={facilityHeadline}
+          lede={facilityIntro}
+        />
+
+        <div className="mt-10 grid gap-10 border-t border-line pt-8 lg:grid-cols-12 lg:gap-12">
+          {workshopPhoto ? (
+            <figure className="lg:col-span-5">
+              <div
+                className="w-full border border-line bg-graphite-2"
+                style={{ maxWidth: workshopPhoto.nativeWidth }}
+              >
+                <Image
+                  src={workshopPhoto.src}
+                  alt={workshopPhoto.alt}
+                  width={workshopPhoto.width}
+                  height={workshopPhoto.height}
+                  unoptimized
+                  className="h-auto w-full"
+                />
+              </div>
+              <figcaption className="meta mt-3 max-w-[46ch] text-steel-hi">
+                <span className="block">{workshopPhoto.caption}</span>
+                {facilityCaption}
+              </figcaption>
+            </figure>
+          ) : null}
+
+          <div className="lg:col-span-6 lg:col-start-7">
+            <ul className="grid gap-6">
+              {facilityPoints.map((point, index) => (
+                <li key={point.title} className="border-t border-line pt-5">
+                  <div className="flex items-baseline gap-3">
+                    <span
+                      aria-hidden="true"
+                      className="font-display text-[0.7rem] font-medium tracking-[0.18em] tabular-nums text-copper-hi"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3 className="font-display text-[1.05rem] font-medium leading-snug text-ivory">
+                      {point.title}
+                    </h3>
+                  </div>
+                  <p className="copy mt-2 max-w-[52ch] text-[0.95rem]">
+                    {point.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Section>
+
+      {/* -- 03 -- Questions, and what is not claimed ---------------------- */}
       <Section tone="dark" aria-labelledby="training-questions-heading">
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="lg:col-span-4">
             <SectionHeading
               id="training-questions-heading"
               eyebrow="Questions"
-              index="02"
+              index="03"
               title="What employers ask about training."
             />
             <div className="mt-8 border border-copper/40 bg-copper/[0.06] p-5">
               <p className="eyebrow text-copper-hi">What is not claimed</p>
-              <p className="copy mt-3 text-[0.95rem]">{trainingNote}</p>
+              <p className="copy mt-3 text-[0.95rem]">
+                No certification, affiliation or accreditation is claimed, and no
+                intake date or fee is published here. Those are confirmed with
+                MITT directly.
+              </p>
             </div>
           </div>
 
@@ -154,7 +178,7 @@ export default function TrainingPage() {
         </div>
       </Section>
 
-      <CTABand index="03" />
+      <CTABand index="04" />
     </>
   );
 }

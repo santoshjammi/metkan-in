@@ -38,9 +38,12 @@ Everything a non-developer would want to edit lives in `src/content/`:
 | `site.ts` | brand name, tagline, phone, email, postal address, Maps link, navigation, CTA labels, dropdown options |
 | `capabilities.ts` | the 7 trade categories, their descriptions, skill examples, availability status |
 | `process.ts` | the 8 engagement stages and each stage's honest "boundary" note |
-| `training.ts` | training areas, the training image, its disclosure caption |
-| `faqs.ts` | employer FAQs and training FAQs |
+| `training.ts` | training intro + the honest note about programmes/fees/certification |
+| `programmes.ts` | the five real training programmes, their durations, levels and skills |
+| `facility.ts` | facility facts, the real facility photographs and their captions |
+| `legacy.ts` | history, the four published figures, leadership, career support, overseas support, brochure |
 | `evidence.ts` | evidence points, testimonials array (empty by design), partner array (empty), hero image + disclaimer |
+| `faqs.ts` | employer FAQs and training FAQs |
 
 **Rule:** replace a placeholder, never invent one. Every unverified value is flagged (`placeholder: true`) so the UI renders an honest pending state instead of a fake one.
 
@@ -98,7 +101,10 @@ npm run backup:leads                  # archive + checksum + verify the lead sto
 ## 5. What is deliberately absent
 
 - **No `/for-workers` page.** There is no approved worker-facing information and no follow-up channel for workers, so shipping one would create a dead end.
-- **No testimonials, client logos or placement statistics.** None are verified or permissioned. The components exist and render an honest empty state — add entries to `src/content/evidence.ts` when you have written permission and the UI fills itself.
+- **No client names, testimonials or logos.** None have been approved for publication. The site *does*
+  publish MITT's own headline figures (23+ years, 100,000+ placed, 14 booths, 80% practical) — each
+  attributed on the cell and accompanied by MITT's own placement disclaimer. Add permissioned
+  testimonials to `src/content/evidence.ts` and the UI fills itself.
 - **No video hero.** No licensed footage. The hero is a graded still; `HeroMedia` accepts a video later without a redesign.
 - **No worker registration, login, dashboard, payment or visa flow.** Out of scope by design.
 - **No third-party analytics.** A privacy-conscious hook activates only if `NEXT_PUBLIC_ANALYTICS_DOMAIN` is set, and it never receives form field values.
