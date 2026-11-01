@@ -38,7 +38,20 @@ if (!defined('MITT_TO_EMAIL')) {
  * answers 201 with notified=false. A configuration gap must never lose a lead.
  */
 if (!defined('MITT_FROM_EMAIL')) {
-    define('MITT_FROM_EMAIL', '');
+    /*
+     * MUST be an address on the deployed domain. mail() from a foreign domain
+     * (a gmail.com From) fails SPF/DMARC alignment and lands in spam.
+     *
+     * LIVE STATE of metkan.in as measured on 2026-11-01: no MX, no SPF TXT, no
+     * DMARC record. Sending as @metkan.in therefore produces a neutral SPF
+     * result, which Gmail frequently files as spam. Two fixes, either is fine:
+     *   (a) in hPanel add an SPF TXT record for metkan.in:
+     *       v=spf1 include:_spf.mail.hostinger.com ~all
+     *   (b) or configure the SMTP block below with a Gmail app password, which
+     *       is authenticated and DKIM-signed, so it delivers reliably today.
+     * The enquiry is stored either way: notify failure never loses a lead.
+     */
+    define('MITT_FROM_EMAIL', 'website@metkan.in');
 }
 
 /** Display name on the From header. */
