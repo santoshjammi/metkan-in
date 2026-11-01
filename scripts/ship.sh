@@ -43,6 +43,9 @@ say PASS "boundary guard"
 
 # ---- 2. commit ---------------------------------------------------------
 echo "== commit"
+# Tell the post-commit hook to stand down: this script pushes immediately below,
+# and letting both push races the same ref, which logs a spurious FAILED line.
+export MITT_SHIPPING=1
 if [ -z "$(git status --porcelain)" ]; then
   say INFO "working tree clean, nothing new to commit"
 else

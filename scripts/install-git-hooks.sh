@@ -31,6 +31,9 @@ cat > "$HOOK" <<'HOOKEOF'
 #!/usr/bin/env bash
 # Installed by scripts/install-git-hooks.sh
 # Mirror the commit to origin/main without ever blocking or failing the commit.
+# ship.sh pushes explicitly; skip here so the two pushes cannot race the same ref
+# and log a spurious failure after a successful push.
+[ "${MITT_SHIPPING:-0}" = "1" ] && exit 0
 branch="$(git branch --show-current 2>/dev/null || echo)"
 [ "$branch" = "main" ] || exit 0
 git remote get-url origin >/dev/null 2>&1 || exit 0
