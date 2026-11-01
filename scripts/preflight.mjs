@@ -22,6 +22,7 @@
 import { access, constants, mkdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
+import { execFileSync } from "node:child_process";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 
@@ -210,10 +211,29 @@ async function checkContactEmail() {
 }
 
 function checkNotification() {
-  const webhook = env("MITT_NOTIFY_WEBHOOK");
-  const host = env("MITT_SMTP_HOST");
-  const from = env("MITT_SMTP_FROM");
-  const to = env("MITT_NOTIFY_TO");
+  /* Credentials may live in the macOS Keychain instead of the environment
+     (see src/lib/notify.ts). An unconfigured machine and a correctly configured
+     one must not look identical to the gate, so read the Keychain too. */
+  const keychain = (account) => {
+    if (process.platform !== "darwin") return undefined;
+    try {
+      const service = env("MITT_KEYCHAIN_SERVICE") || "mitt-smtp";
+      const out = execFileSync(
+        "security",
+        ["find-generic-password", "-s", service, "-a", account, "-w"],
+        { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], timeout: 2000 },
+      ).trim();
+      return out.length > 0 ? out : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  const setting = (name, account) => env(name) || keychain(account);
+
+  const webhook = setting("MITT_NOTIFY_WEBHOOK", "notify-webhook");
+  const host = setting("MITT_SMTP_HOST", "smtp-host");
+  const from = setting("MITT_SMTP_FROM", "smtp-from");
+  const to = setting("MITT_NOTIFY_TO", "notify-to");
 
   const smtpMissing = [];
   if (!host) smtpMissing.push("MITT_SMTP_HOST");

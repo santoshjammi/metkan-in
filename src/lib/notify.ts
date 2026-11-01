@@ -28,6 +28,7 @@
  */
 
 import type { EnquiryRecord } from "@/lib/leads";
+import { execFileSync } from "node:child_process";
 
 export type NotifyChannel = "webhook" | "smtp" | "none";
 
@@ -56,8 +57,64 @@ interface SmtpConfig {
 
 /* ── configuration ───────────────────────────────────────────────────────── */
 
+/**
+ * Credentials may live in the macOS Keychain instead of the environment.
+ *
+ * Why: a mail password in `.env` is a plaintext secret on disk that gets copied
+ * into backups, screenshots and shell history. On a developer machine the
+ * Keychain is the right home for it. Deployments (containers, systemd) have no
+ * Keychain, so environment variables remain the primary source there.
+ *
+ * Precedence is env first, then Keychain -- an explicit deployment setting must
+ * always win over a leftover local keychain item.
+ *
+ * Populate with `scripts/setup-mail.sh`, which prompts without echoing and never
+ * puts the password on a command line.
+ */
+const KEYCHAIN_SERVICE = process.env.MITT_KEYCHAIN_SERVICE?.trim() || "mitt-smtp";
+
+interface CachedSecret {
+  value: string | null;
+  at: number;
+}
+
+/** Short cache: a `security` spawn per field per request would be wasteful. */
+const secretCache = new Map<string, CachedSecret>();
+const SECRET_TTL_MS = 30_000;
+
+function fromKeychain(account: string): string | null {
+  if (process.platform !== "darwin") return null;
+
+  const cached = secretCache.get(account);
+  if (cached && Date.now() - cached.at < SECRET_TTL_MS) return cached.value;
+
+  let value: string | null = null;
+  try {
+    const out = execFileSync(
+      "security",
+      ["find-generic-password", "-s", KEYCHAIN_SERVICE, "-a", account, "-w"],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], timeout: 2000 },
+    );
+    const trimmed = out.trim();
+    value = trimmed.length > 0 ? trimmed : null;
+  } catch {
+    /* Missing item, locked keychain, not macOS: all mean "not configured". */
+    value = null;
+  }
+
+  secretCache.set(account, { value, at: Date.now() });
+  return value;
+}
+
+function configValue(envName: string, keychainAccount: string): string | undefined {
+  const fromEnv = process.env[envName]?.trim();
+  if (fromEnv) return fromEnv;
+  const fromStore = fromKeychain(keychainAccount);
+  return fromStore ?? undefined;
+}
+
 function readWebhookUrl(): string | null {
-  const raw = process.env.MITT_NOTIFY_WEBHOOK?.trim();
+  const raw = configValue("MITT_NOTIFY_WEBHOOK", "notify-webhook");
   if (!raw) return null;
 
   let url: URL;
@@ -84,25 +141,25 @@ function readWebhookUrl(): string | null {
 }
 
 function readSmtpConfig(): SmtpConfig | null {
-  const host = process.env.MITT_SMTP_HOST?.trim();
-  const from = process.env.MITT_SMTP_FROM?.trim();
+  const host = configValue("MITT_SMTP_HOST", "smtp-host");
+  const from = configValue("MITT_SMTP_FROM", "smtp-from");
   /* MITT_NOTIFY_TO is required: an SMTP transport with no recipient is not a
      notification channel, it is a misconfiguration that silently drops leads. */
-  const to = (process.env.MITT_NOTIFY_TO ?? "")
+  const to = (configValue("MITT_NOTIFY_TO", "notify-to") ?? "")
     .split(",")
     .map((part) => part.trim())
     .filter((part) => part.length > 0);
 
   if (!host || !from || to.length === 0) return null;
 
-  const portRaw = process.env.MITT_SMTP_PORT?.trim();
+  const portRaw = configValue("MITT_SMTP_PORT", "smtp-port");
   const parsedPort = portRaw ? Number.parseInt(portRaw, 10) : NaN;
   const port = Number.isFinite(parsedPort) && parsedPort > 0 ? parsedPort : 587;
 
-  const secure = process.env.MITT_SMTP_SECURE?.trim().toLowerCase() === "true";
+  const secure = configValue("MITT_SMTP_SECURE", "smtp-secure")?.toLowerCase() === "true";
 
-  const user = process.env.MITT_SMTP_USER?.trim() || undefined;
-  const pass = process.env.MITT_SMTP_PASS?.trim() || undefined;
+  const user = configValue("MITT_SMTP_USER", "smtp-user") || undefined;
+  const pass = configValue("MITT_SMTP_PASS", "smtp-pass") || undefined;
 
   return { host, port, secure, user, pass, from, to };
 }
