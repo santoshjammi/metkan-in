@@ -4,14 +4,15 @@ import { Section } from "@/components/marketing/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Badge } from "@/components/ui/Badge";
 import { site } from "@/content/site";
+import { seoCopy } from "@/content/seo";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Website terms of use",
-  description:
-    "Terms for using the MITT website: acceptable use, enquiries creating no contract, accuracy of information, intellectual property, no guarantee of workers or outcomes, and applicable law.",
-  path: "/terms",
+  title: seoCopy.terms.title,
+  description: seoCopy.terms.description,
+  path: seoCopy.terms.path,
+  absoluteTitle: true,
 });
 
 const LAST_UPDATED = "30 October 2026";
@@ -75,6 +76,8 @@ export default function TermsPage() {
       <PageHero
         eyebrow="Legal"
         title="Website terms of use."
+        answer={seoCopy.terms.answer}
+        reviewed
         lede="The rules for using this website, and what an enquiry through it does and does not create."
         meta={{
           label: "In these terms",

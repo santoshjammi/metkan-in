@@ -5,14 +5,15 @@ import { Section } from "@/components/marketing/Section";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Badge } from "@/components/ui/Badge";
 import { site } from "@/content/site";
+import { seoCopy } from "@/content/seo";
 import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Privacy notice",
-  description:
-    "How MITT handles information sent through this website's employer enquiry form: what is collected, why, how long it is kept, who sees it, and your rights under India's Digital Personal Data Protection Act, 2023.",
-  path: "/privacy",
+  title: seoCopy.privacy.title,
+  description: seoCopy.privacy.description,
+  path: seoCopy.privacy.path,
+  absoluteTitle: true,
 });
 
 const LAST_UPDATED = "30 October 2026";
@@ -82,6 +83,8 @@ export default function PrivacyPage() {
       <PageHero
         eyebrow="Legal"
         title="Privacy notice."
+        answer={seoCopy.privacy.answer}
+        reviewed
         lede="What this website does with the information you send it, written for this site specifically rather than as a generic policy."
         meta={{
           label: "In this notice",

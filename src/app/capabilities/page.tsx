@@ -14,13 +14,18 @@ import {
   type Capability,
 } from "@/content/capabilities";
 import { cta } from "@/content/site";
-import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
+import { seoCopy } from "@/content/seo";
+import {
+  breadcrumbJsonLd,
+  buildMetadata,
+  serviceJsonLd,
+} from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Capabilities",
-  description:
-    "Seven trade categories MITT coordinates — welding, fitting and fabrication, electrical, plumbing, mechanical, construction and general industrial workforce — each with availability confirmed against a specific requirement.",
-  path: "/capabilities",
+  title: seoCopy.capabilities.title,
+  description: seoCopy.capabilities.description,
+  path: seoCopy.capabilities.path,
+  absoluteTitle: true,
 });
 
 /**
@@ -151,10 +156,15 @@ export default function CapabilitiesPage() {
           { name: "Capabilities", path: "/capabilities" },
         ])}
       />
+      {/* Every name and description below is rendered on this page: the seven
+          categories in section 02, with their skills and availability note. */}
+      <JsonLd id="capabilities-service" data={serviceJsonLd()} />
 
       <PageHero
         eyebrow="Capabilities"
         title="Seven trade categories, one honest status."
+        answer={seoCopy.capabilities.answer}
+        reviewed
         lede="What MITT coordinates, what it assesses in each trade, and what is actually confirmed before an employer plans around it."
         cta={{ label: cta.primaryShort, href: "/contact" }}
         secondary={{ label: "See the eight stages", href: "/our-process" }}

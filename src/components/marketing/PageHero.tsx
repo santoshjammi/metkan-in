@@ -1,6 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { AnswerBlock } from "@/components/seo/AnswerBlock";
+import { ReviewNote } from "@/components/seo/ReviewNote";
 import { Button } from "@/components/ui/Button";
 
 function cn(...inputs: ClassValue[]) {
@@ -81,6 +83,13 @@ export interface PageHeroProps {
   index?: string;
   title: string;
   lede?: string;
+  /**
+   * 40-60 word direct answer to the page's own question. Rendered as the first
+   * paragraph under the h1, before the lede, so an answer engine can lift it.
+   */
+  answer?: string;
+  /** Show the site-wide editorial review line under the hero copy. */
+  reviewed?: boolean;
   cta?: { label: string; href: string };
   secondary?: { label: string; href: string };
   meta?: PageHeroMeta;
@@ -101,6 +110,8 @@ export function PageHero({
   index,
   title,
   lede,
+  answer,
+  reviewed = false,
   cta,
   secondary,
   meta,
@@ -108,6 +119,8 @@ export function PageHero({
   className,
 }: PageHeroProps) {
   const t = toneClasses[tone];
+  /** Both surfaces share one text tone: ivory on ink/graphite, ink on ivory. */
+  const textTone = tone === "light" ? "light" : "dark";
 
   return (
     <section
@@ -154,8 +167,14 @@ export function PageHero({
               {title}
             </h1>
 
+            {answer ? <AnswerBlock tone={textTone}>{answer}</AnswerBlock> : null}
+
             {lede ? (
               <p className={cn("mt-4 max-w-[52ch]", t.lede)}>{lede}</p>
+            ) : null}
+
+            {reviewed ? (
+              <ReviewNote tone={textTone} className="mt-7" />
             ) : null}
 
             {cta || secondary ? (

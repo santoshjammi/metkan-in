@@ -33,6 +33,10 @@ for (const file of walk(ROOT).sort()) {
   const route = "/" + path.relative(ROOT, file).replace(/(index)?\.html$/, "").replace(/\\/g, "/");
 
   const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "").trim();
+  // Measure the DECODED title: "&amp;" is 5 characters in the HTML but 1 in the
+  // SERP, so counting the raw markup reports false truncation on any title
+  // containing an ampersand.
+  const titleText = decode(title);
   const desc = (html.match(/<meta[^>]+name="description"[^>]+content="([^"]*)"/i)?.[1] ?? "").trim();
   const canonical = html.match(/<link[^>]+rel="canonical"[^>]+href="([^"]*)"/i)?.[1] ?? "";
   const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/gi)].map((m) => text(m[1]));
@@ -47,13 +51,16 @@ for (const file of walk(ROOT).sort()) {
   const words = body ? body.split(/\s+/).length : 0;
   const og = ["og:title", "og:description", "og:image", "og:url"].filter((k) => html.includes(`property="${k}"`));
   const hasDate = /\b(20\d\d-\d\d-\d\d|last (reviewed|updated)|updated)\b/i.test(body.slice(0, 2500));
-  const firstPara = (html.match(/<p[^>]*>([\s\S]*?)<\/p>/i)?.[1] ?? "");
-  const answerWords = text(firstPara).split(/\s+/).filter(Boolean).length;
+  // AEO answer block: pages usually open with a short eyebrow/label paragraph, so
+  // measure the first SUBSTANTIVE paragraph rather than literally the first <p>.
+  const paras = [...html.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)].map((m) => text(m[1]));
+  const answerParas = paras.map((t) => t.split(/\s+/).filter(Boolean).length).filter((n) => n >= 20);
+  const answerWords = answerParas[0] ?? 0;
 
-  if (title) titles.set(title, (titles.get(title) ?? 0) + 1);
+  if (title) titles.set(titleText, (titles.get(titleText) ?? 0) + 1);
   if (desc) descs.set(desc, (descs.get(desc) ?? 0) + 1);
 
-  pages.push({ route, file, title, titleLen: title.length, desc, descLen: desc.length, canonical,
+  pages.push({ route, file, title: titleText, titleLen: titleText.length, desc, descLen: desc.length, canonical,
     h1: h1s.length, h1Text: h1s[0] ?? "", h2: h2s.length, h3: h3s.length, jsonld,
     imgs: imgs.length, noAlt, internal: internal.size, words, og: og.length, hasDate, answerWords });
 }

@@ -24,6 +24,7 @@ import {
   leadership,
 } from "@/content/legacy";
 import { cta, site } from "@/content/site";
+import { seoCopy } from "@/content/seo";
 import {
   breadcrumbJsonLd,
   buildMetadata,
@@ -31,10 +32,10 @@ import {
 } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "About",
-  description:
-    "Metkan Institute for Technical Training (MITT), formerly St. Patrick Welding Institute, has trained and placed industrial tradespeople from Autonagar, Visakhapatnam for more than 23 years. Published leadership, placement support and contact details.",
-  path: "/about",
+  title: seoCopy.about.title,
+  description: seoCopy.about.description,
+  path: seoCopy.about.path,
+  absoluteTitle: true,
 });
 
 /**
@@ -90,6 +91,8 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About"
         title="Metkan Institute for Technical Training."
+        answer={seoCopy.about.answer}
+        reviewed
         lede={site.heroSupport}
         cta={{ label: cta.speak, href: "/contact" }}
         secondary={{ label: "How an engagement works", href: "/our-process" }}

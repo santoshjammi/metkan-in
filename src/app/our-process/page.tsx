@@ -14,13 +14,14 @@ import {
   processStages,
 } from "@/content/process";
 import { cta } from "@/content/site";
-import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
+import { seoCopy } from "@/content/seo";
+import { breadcrumbJsonLd, buildMetadata, howToJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Our process",
-  description:
-    "The eight stages of a MITT engagement, from requirement received to outcome confirmation — with the limit of each stage stated and interview, selection and joining kept as separate events.",
-  path: "/our-process",
+  title: seoCopy.process.title,
+  description: seoCopy.process.description,
+  path: seoCopy.process.path,
+  absoluteTitle: true,
 });
 
 /**
@@ -39,10 +40,15 @@ export default function OurProcessPage() {
           { name: "Our process", path: "/our-process" },
         ])}
       />
+      {/* The eight stages, their titles and their bodies are rendered in
+          section 01. The steps restate them; nothing new is described. */}
+      <JsonLd id="process-howto" data={howToJsonLd()} />
 
       <PageHero
         eyebrow="How an engagement works"
         title="Eight stages, each with a stated limit."
+        answer={seoCopy.process.answer}
+        reviewed
         lede={processCaveat}
         cta={{ label: cta.primaryShort, href: "/contact" }}
         secondary={{ label: "See the trade categories", href: "/capabilities" }}

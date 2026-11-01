@@ -25,13 +25,15 @@ import {
   site,
   timelines,
 } from "@/content/site";
+import { seoCopy } from "@/content/seo";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "For employers",
-  description:
-    "How MITT works with industrial employers and staffing agencies: what a workforce requirement should include, how screening and interview coordination work, and how to submit a requirement.",
-  alternates: { canonical: "/for-employers" },
-};
+export const metadata: Metadata = buildMetadata({
+  title: seoCopy.employers.title,
+  description: seoCopy.employers.description,
+  path: seoCopy.employers.path,
+  absoluteTitle: true,
+});
 
 const telHref = `tel:${site.phone.display.replace(/[^+\d]/g, "")}`;
 
@@ -97,6 +99,8 @@ export default function ForEmployersPage() {
         eyebrow="For employers & agencies"
         index="01"
         title="Send the requirement. Get an honest answer."
+        answer={seoCopy.employers.answer}
+        reviewed
         lede={`MITT coordinates technical training, skilled-worker screening and interview logistics for industrial employers and staffing agencies working from Visakhapatnam. Describe the requirement and you will get a direct answer about what can realistically be supported. ${scopeCaveat}`}
         cta={{ label: cta.submit, href: "/contact" }}
         secondary={{ label: cta.capabilities, href: "/capabilities" }}

@@ -19,13 +19,18 @@ import {
 } from "@/content/facility";
 import { programmeIntro, programmeNote } from "@/content/programmes";
 import { cta } from "@/content/site";
-import { breadcrumbJsonLd, buildMetadata } from "@/lib/seo";
+import { seoCopy } from "@/content/seo";
+import {
+  breadcrumbJsonLd,
+  buildMetadata,
+  courseListJsonLd,
+} from "@/lib/seo";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Training & preparation",
-  description:
-    "MITT's five practical programmes in Visakhapatnam: Structural Welding, Pipe Welding Mastery, Industrial Pipe Fitter, Structural Fitter / Fabricator and custom corporate upskilling - welding, pipe fitting and structural fabrication taught in a fourteen-booth workshop.",
-  path: "/training",
+  title: seoCopy.training.title,
+  description: seoCopy.training.description,
+  path: seoCopy.training.path,
+  absoluteTitle: true,
 });
 
 /**
@@ -47,10 +52,16 @@ export default function TrainingPage() {
           { name: "Training", path: "/training" },
         ])}
       />
+      {/* The five programmes are rendered in section 01 with their summary,
+          duration, level band and skills - which is exactly what this markup
+          restates. No certificate, fee or intake date is claimed. */}
+      <JsonLd id="training-courses" data={courseListJsonLd()} />
 
       <PageHero
         eyebrow="Training"
         title="Training is the front half of hiring."
+        answer={seoCopy.training.answer}
+        reviewed
         lede="Five programmes taught in a working workshop: welding, pipe fitting and structural fabrication, for beginners, working professionals and people upskilling in a new process."
         cta={{ label: cta.primaryShort, href: "/contact" }}
         secondary={{ label: "See the trade categories", href: "/capabilities" }}

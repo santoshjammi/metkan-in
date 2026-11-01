@@ -6,13 +6,20 @@ import { PageHero } from "@/components/marketing/PageHero";
 import { Section } from "@/components/marketing/Section";
 import { SectionHeading } from "@/components/marketing/SectionHeading";
 import { site, scopeCaveat } from "@/content/site";
+import { seoCopy } from "@/content/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import {
+  buildMetadata,
+  contactPageJsonLd,
+  organizationJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Discuss your workforce requirement",
-  description:
-    "Send MITT the trades, approximate numbers, site and timeline for a workforce requirement. Enquiries are reviewed and answered directly; no response time is promised.",
-  alternates: { canonical: "/contact" },
-};
+export const metadata: Metadata = buildMetadata({
+  title: seoCopy.contact.title,
+  description: seoCopy.contact.description,
+  path: seoCopy.contact.path,
+  absoluteTitle: true,
+});
 
 /**
  * `site.phone.href` carries a masked value in content (the number itself is
@@ -61,6 +68,12 @@ const beforeYouSend = [
 export default function ContactPage() {
   return (
     <>
+      {/* ContactPage points at the organization node emitted below it; the
+          address, telephone and location are all rendered further down this
+          page, so the markup describes what a reader can see. */}
+      <JsonLd id="contact-page" data={contactPageJsonLd()} />
+      <JsonLd id="contact-organization" data={organizationJsonLd()} />
+
       {/* Graphite curtain so the ink form act below is a distinct intensity. */}
       <PageHero
         id="contact-heading"
@@ -68,6 +81,8 @@ export default function ContactPage() {
         index="01"
         tone="graphite"
         title="Discuss your workforce requirement"
+        answer={seoCopy.contact.answer}
+        reviewed
         lede="Send the trades, approximate numbers, the site and when you need people. That is enough to start. MITT reviews the requirement and replies directly — including a clear answer if it cannot be supported."
         meta={{
           label: "What to send",

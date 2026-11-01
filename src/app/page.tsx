@@ -21,18 +21,30 @@ import { Section } from "@/components/marketing/Section";
 import { SectionHeading } from "@/components/marketing/SectionHeading";
 import { StatBand } from "@/components/marketing/StatBand";
 import { TrainingPanel } from "@/components/marketing/TrainingPanel";
+import { AnswerBlock } from "@/components/seo/AnswerBlock";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { ReviewNote } from "@/components/seo/ReviewNote";
 import { evidenceHeading, evidenceIntro } from "@/content/evidence";
 import {
   processCaveat,
   processDisambiguation,
   processStages,
 } from "@/content/process";
+import { editorial, seoCopy } from "@/content/seo";
 import { trainingIntro } from "@/content/training";
 import { cta, site } from "@/content/site";
+import {
+  buildMetadata,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-};
+export const metadata: Metadata = buildMetadata({
+  title: seoCopy.home.title,
+  description: seoCopy.home.description,
+  path: seoCopy.home.path,
+  absoluteTitle: true,
+});
 
 /** Hero words are split only so each can rise inside its own mask. */
 const heroWords = site.heroHeadline.split(" ");
@@ -54,6 +66,12 @@ const editorialPanels: EditorialPanelItem[] = [
 export default function HomePage() {
   return (
     <>
+      {/* The homepage names the two entities it can actually evidence: the site
+          itself and the organisation that publishes it. No sameAs, no review, no
+          rating - none of that exists to point at. */}
+      <JsonLd id="home-website" data={websiteJsonLd()} />
+      <JsonLd id="home-organization" data={organizationJsonLd()} />
+
       {/* One shared client island drives every entrance on this page. It also
           owns the reveal CSS, so nothing here depends on an animation runtime. */}
       <RevealObserver />
@@ -96,12 +114,18 @@ export default function HomePage() {
               ))}
             </h1>
 
+            <AnswerBlock tone="dark" className="hero-rise mt-6 max-w-[48ch]">
+              {seoCopy.home.answer}
+            </AnswerBlock>
+
             <p
-              className="hero-rise copy mt-6 max-w-[46ch] text-ivory/85"
+              className="hero-rise copy mt-4 max-w-[46ch] text-ivory/80"
               style={{ animationDelay: "300ms" }}
             >
               {site.heroSupport}
             </p>
+
+            <ReviewNote tone="dark" className="hero-rise mt-6" />
 
             <div
               className="hero-rise mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap"
@@ -130,7 +154,20 @@ export default function HomePage() {
       </section>
 
       {/* -- The numbers band: MITT's own published figures, attributed ----- */}
-      <StatBand />
+      <StatBand className="pb-0" />
+
+      {/* -- Colophon: named source for the figures, and the published NAP ----
+          The band above is MITT's own material, so the source is named rather
+          than implied. The address line keeps the postal address visible on the
+          homepage, which is what the EducationalOrganization markup describes. */}
+      <div className="bg-ink">
+        <div className="shell border-t border-line py-6">
+          <p className="meta max-w-[74ch] text-steel-hi">{editorial.figuresSource}</p>
+          <p className="meta mt-2 max-w-[74ch] text-steel-hi">
+            {site.legalName}, {site.addressLine}. Telephone {site.phone.display}.
+          </p>
+        </div>
+      </div>
 
       {/* ── Act 2 — The people behind industry ───────────────────────────── */}
       <Section tone="light" aria-labelledby="people-heading">
