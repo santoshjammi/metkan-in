@@ -90,6 +90,23 @@ if git ls-files | grep -qE '^(src|app)/|^package\.json$'; then
 fi
 say PASS "branch root is a served website (index.html present, no src/)"
 
+# ---- 4b. refuse to publish localhost canonicals -------------------------
+# A build made without NEXT_PUBLIC_SITE_URL bakes http://localhost:3210 into
+# canonical tags, the sitemap and og:url. Publishing that tells search engines
+# every real page duplicates a URL that does not exist. Block it here as well as
+# in build-static.sh, because this is the last gate before a customer sees it.
+LOCAL_HITS="$(git grep -l 'http://localhost:3210' -- 'index.html' '*index.html' 'sitemap.xml' 'robots.txt' 2>/dev/null | head -3)"
+if [ -n "$LOCAL_HITS" ]; then
+  if [ "${MITT_ALLOW_LOCAL_CANONICAL:-0}" = "1" ]; then
+    say WARN "publishing localhost canonicals (MITT_ALLOW_LOCAL_CANONICAL=1) - not for customers"
+  else
+    die "refusing to publish: the build carries http://localhost:3210 canonicals/sitemap.
+     Rebuild with NEXT_PUBLIC_SITE_URL set to the live https origin, then publish again.
+     Affected: $(printf '%s' "$LOCAL_HITS" | tr '\n' ' ')"
+  fi
+fi
+say PASS "canonicals point at a real origin"
+
 # ---- 5. push -----------------------------------------------------------
 if [ "${PUSH:-0}" = "1" ]; then
   git push -u origin "$BRANCH"

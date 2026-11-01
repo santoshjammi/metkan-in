@@ -47,11 +47,30 @@ printf 'NEXT_OUTPUT=%s\nNEXT_PUBLIC_ENQUIRY_ENDPOINT=%s\n' \
 # The canonical origin is baked into robots.txt, sitemap.xml, canonical tags and
 # the Open Graph URLs at BUILD time. Without it they all point at the local
 # preview origin (http://localhost:3210) - fine locally, wrong on the host.
-if [ -z "${NEXT_PUBLIC_SITE_URL:-}" ]; then
-  printf 'WARNING: NEXT_PUBLIC_SITE_URL is not set. robots.txt, sitemap.xml and canonical/\n' >&2
-  printf '         Open Graph URLs will point at the local preview origin. Set it to the\n' >&2
-  printf '         live https origin before building the artifact you deploy.\n' >&2
+#
+# This is a HARD FAIL rather than a warning: an artifact whose canonicals point at
+# localhost tells Google every real page is a duplicate of a URL that does not
+# exist, which de-indexes the site while looking perfectly fine to a human. A
+# build you cannot deploy is better than a build that silently destroys rankings.
+# For local verification of the artifact, override deliberately:
+#   MITT_LOCAL_URL_OK=1 npm run build:static
+SITE_URL="${NEXT_PUBLIC_SITE_URL:-}"
+if [ -z "$SITE_URL" ]; then
+  if [ "${MITT_LOCAL_URL_OK:-0}" = "1" ]; then
+    printf 'WARNING: NEXT_PUBLIC_SITE_URL unset (MITT_LOCAL_URL_OK=1). Canonicals, sitemap\n' >&2
+    printf '         and Open Graph URLs point at the local preview origin. This artifact\n' >&2
+    printf '         MUST NOT be published to the host.\n' >&2
+  else
+    fail "NEXT_PUBLIC_SITE_URL is not set. Canonicals, sitemap and Open Graph URLs would bake in http://localhost:3210, which de-indexes the live site. Export the real https origin, or pass MITT_LOCAL_URL_OK=1 for a local-only artifact."
+  fi
 fi
+case "$SITE_URL" in
+  *localhost*|*127.0.0.1*|*example.com*|*example.in*)
+    if [ "${MITT_LOCAL_URL_OK:-0}" != "1" ]; then
+      fail "NEXT_PUBLIC_SITE_URL is '$SITE_URL' - a placeholder/local origin. Set the real https domain before building the deployable artifact."
+    fi
+    ;;
+esac
 
 # The PHP endpoint is written by another track; if it is not here, the static
 # build would ship a form that posts to /enquiry.php and gets a 404. Refuse.
