@@ -13,8 +13,9 @@ import { site } from "@/content/site";
  *  - a reference is shown only when `?ref=` matches the issued format;
  *  - with no (or a malformed) reference the page says plainly that it cannot
  *    confirm a specific submission;
- *  - no email or SMS is claimed, because none is sent — no enquiries inbox or
- *    notification channel is configured yet.
+ *  - it never claims an email reached the visitor, because none is sent to them.
+ *    Staff notification (SMTP/webhook) may or may not be configured, so the page
+ *    deliberately says nothing about internal delivery either way.
  *
  * Not `force-static`: the page reads `searchParams`, so it is rendered per
  * request. That is the correct trade for a confirmation page, and `robots`
@@ -92,16 +93,16 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
                 {reference}
               </p>
               <p className="meta mt-3 max-w-[46ch] text-steel-hi">
-                Quote this if you call {site.phone.display}. No separate email
-                confirmation has been sent — an enquiries inbox is not live yet, so
-                this page is the record that the enquiry reached MITT.
+                Quote this reference if you call {site.phone.display}. No email
+                confirmation is sent to you — this page and this reference are your
+                record that the enquiry reached MITT.
               </p>
             </div>
           ) : (
             <div className="mt-9 border-y border-line py-6">
               <p className="meta max-w-[50ch] text-steel-hi">
-                No confirmation email has been sent, because no enquiries inbox is
-                live yet. If you are unsure whether your enquiry went through, call{" "}
+                No email confirmation is sent to you. If you are unsure whether your
+                enquiry went through, call{" "}
                 <a
                   href={`tel:${site.phone.display.replace(/[^+\d]/g, "")}`}
                   className="text-ivory underline decoration-ivory/30 underline-offset-[0.3em] transition-colors duration-200 hover:text-copper-hi hover:decoration-copper-hi"
