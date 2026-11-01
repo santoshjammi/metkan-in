@@ -14,7 +14,7 @@
 2. **A separate internal application exists outside this repository.** It is MITT's own platform, it is
    not part of this deliverable, and it must not be imported, read, modified, disclosed or deployed
    from here. This site exposes no worker records of any kind.
-3. **No fabricated proof.** No invented testimonials, employer logos, placement counts, certifications, awards, years-in-service, addresses or phone numbers. If a fact is not verified (see §1), it ships as a clearly-labelled development placeholder AND is listed in `docs/LAUNCH-CHECKLIST.md`.
+3. **No fabricated proof.** No invented testimonials, employer logos, placement counts, certifications, awards, years-in-service, addresses or phone numbers. If a fact is not verified (see §1), it ships as a clearly-labelled development placeholder AND is listed in `LAUNCH-CHECKLIST (private ops docs)`.
 4. **No false success.** The enquiry endpoint must only report success after a durable write. If the store is unavailable it returns an honest error.
 5. **No public deployment.** Local production build + preview only.
 

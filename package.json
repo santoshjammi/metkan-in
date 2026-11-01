@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3210",
     "build": "next build",
+    "build:static": "bash scripts/build-static.sh",
     "start": "next start -p 3210",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

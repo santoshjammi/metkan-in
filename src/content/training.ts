@@ -6,7 +6,7 @@
  * photographs arrived. Programmes now come from `src/content/programmes.ts` and
  * facility evidence from `src/content/facility.ts`.
  *
- * Source register: docs/FACTS-FROM-FLYER.md.
+ * Source register: FACTS-FROM-FLYER (private ops docs).
  */
 
 export const trainingIntro =

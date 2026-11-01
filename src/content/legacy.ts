@@ -1,6 +1,6 @@
 /**
  * History, measured claims, leadership and placement support - from MITT's flyer
- * (pages 1 and 4). Register: docs/FACTS-FROM-FLYER.md.
+ * (pages 1 and 4). Register: FACTS-FROM-FLYER (private ops docs).
  *
  * ATTRIBUTION RULE: figures marked `attributed` are MITT's own published statements.
  * The UI must present them with their source note and with `placementDisclaimer`
@@ -88,7 +88,7 @@ export const careerSupportIntro =
 
 /**
  * Overseas support, as MITT publishes it. COMPLIANCE: no licence, authorisation or
- * approval may be stated or implied. See docs/FACTS-FROM-FLYER.md C1-C3.
+ * approval may be stated or implied. See FACTS-FROM-FLYER (private ops docs) C1-C3.
  */
 export const overseasSupport = {
   heading: "Overseas placement and travel coordination",

@@ -12,6 +12,15 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 /**
+ * Prerender at build time. `next/og` (satori + resvg) runs in the build
+ * process, so the PNG can be generated once and shipped as a static file - it
+ * does not need a server to answer requests. Under `output: "export"` this is
+ * mandatory: without it the build fails with "export const dynamic =
+ * force-static not configured on route /opengraph-image".
+ */
+export const dynamic = "force-static";
+
+/**
  * The social card: ink ground, one copper rule, the wordmark and the hero
  * headline. No network fonts — `ImageResponse` uses the font bundled with
  * `next/og`, so this renders the same offline and during `next build`, and the

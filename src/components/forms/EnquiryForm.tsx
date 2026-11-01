@@ -31,6 +31,21 @@ import {
 } from "@/lib/validation";
 import { FormStatus, type FormStatusItem } from "./FormStatus";
 
+/**
+ * Where the form posts. Fixed at BUILD time, because the two artifacts ship to
+ * different runtimes:
+ *  - Node server build: /api/enquiry (the app/api route handler).
+ *  - Static export for Apache shared hosting: /enquiry.php, shipped under
+ *    public/ by scripts/build-static.sh (which sets
+ *    NEXT_PUBLIC_ENQUIRY_ENDPOINT=/enquiry.php). There is no Node process on
+ *    the host, so the route handler does not exist in that artifact at all.
+ *
+ * NEXT_PUBLIC_* is inlined literally at build time, so this stays readable by
+ * the browser bundle without any runtime configuration.
+ */
+const ENQUIRY_ENDPOINT =
+  process.env.NEXT_PUBLIC_ENQUIRY_ENDPOINT || "/api/enquiry";
+
 interface FormValues {
   name: string;
   organisation: string;
@@ -187,7 +202,7 @@ export function EnquiryForm() {
     setSubmitting(true);
 
     try {
-      const response = await fetch("/api/enquiry", {
+      const response = await fetch(ENQUIRY_ENDPOINT, {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({

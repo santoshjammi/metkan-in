@@ -1,6 +1,6 @@
 /**
  * Training programmes - transcribed from MITT's published flyer (page 2).
- * Source register: docs/FACTS-FROM-FLYER.md (P1-P5).
+ * Source register: FACTS-FROM-FLYER (private ops docs) (P1-P5).
  *
  * Do not add a programme, duration, level or skill that is not in that register.
  */

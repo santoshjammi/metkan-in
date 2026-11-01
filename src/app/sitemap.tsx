@@ -2,6 +2,25 @@ import type { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/seo";
 
 /**
+ * NOTE ON THE FILE EXTENSION: this is `.tsx`, not `.ts`, and that is load-bearing.
+ *
+ * `npm run build:static` sets `NEXT_OUTPUT=export`, and static export mode
+ * narrows `pageExtensions` to `["tsx"]` (see next.config.ts) so the two
+ * `route.ts` handlers under src/app/api are not collected as routes - a static
+ * host has no Node process to run them, and Next refuses to export a route
+ * handler that declares `dynamic = "force-dynamic"`. Every page, layout and
+ * metadata route in this app is `.tsx`, which is what keeps it in the artifact;
+ * a `.ts` metadata route would be dropped from the static build while still
+ * working on the server build. Hence no `.ts` route files here.
+ *
+ * `force-static` makes this route prerender to the sitemap XML in BOTH build
+ * modes. A static export has no server to generate it per request, so without
+ * this the file is simply absent from the artifact and the sitemap reference in
+ * robots.txt points at a 404.
+ */
+export const dynamic = "force-static";
+
+/**
  * The site is deployed as one unit, so every route shares the build timestamp
  * as its last-modified date. No route claims more recent content than the
  * deployment that shipped it.

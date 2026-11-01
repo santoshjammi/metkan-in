@@ -28,8 +28,12 @@ for (const viewport of [
   const ctx = await browser.newContext({ viewport, reducedMotion: "reduce" });
   const page = await ctx.newPage();
   for (const route of ROUTES) {
-    await page.goto(BASE + route, { waitUntil: "domcontentloaded" });
-    await page.waitForTimeout(400);
+    await page.goto(BASE + route, { waitUntil: "load" });
+    // Wait for fonts and any client island to settle. At 400ms this audit was
+    // flaky: a cold first render reported violations that vanished on re-run,
+    // which is worse than useless - it hides real regressions behind noise.
+    await page.waitForTimeout(900);
+    await page.evaluate(() => document.fonts?.ready);
     const res = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
       .analyze();

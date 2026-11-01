@@ -1,0 +1,71 @@
+# MITT - static artifact for Apache shared hosting (Hostinger)
+#
+# Ships inside out/ by copy (the file lives at public/.htaccess in the repo).
+# Every block is guarded by <IfModule> so a stripped-down Apache without
+# mod_authz_core, mod_headers, mod_alias or mod_autoindex still serves the site
+# instead of returning 500. Nothing here needs mod_rewrite.
+#
+# There is deliberately NO Content-Security-Policy: the static export ships
+# Next.js inline bootstrap and streamed RSC payload scripts, and a policy that
+# does not allow them breaks hydration on the one page that must work (the
+# enquiry form). Headers only here; no framing, no sniffing, tight referrer.
+
+# Directories resolve to their index.html. trailingSlash: true in the Next
+# config means /contact/ -> /contact/index.html, and /contact -> 301 /contact/.
+DirectoryIndex index.html
+
+<IfModule mod_autoindex.c>
+  # No directory listings if an index.html is ever missing.
+  Options -Indexes
+</IfModule>
+
+# The custom 404 shipped by the export.
+ErrorDocument 404 /404.html
+
+# ---------------------------------------------------------------------------
+# Private files that must never be fetched over HTTP, even though they sit in
+# the document root so PHP can write to them.
+#   - enquiry-config.php : SMTP/secret config for the form endpoint
+#   - enquiry-log.txt    : endpoint error log
+#   - composer.*         : dependency metadata, no business being public
+#   - *.md, *.log        : build notes and logs
+#
+# NOTE: .txt is NOT denied wholesale. A blanket `\.txt$` rule would 403
+# robots.txt and take the site out of search. Only the named log is blocked.
+# Also denied: the .ht* files themselves.
+# ---------------------------------------------------------------------------
+<IfModule mod_authz_core.c>
+  <FilesMatch "(?i)^(enquiry-config\.php|enquiry-log\.txt|composer\.json|composer\.lock|.*\.md|.*\.log|\.ht.*)$">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+<IfModule !mod_authz_core.c>
+  <FilesMatch "(?i)^(enquiry-config\.php|enquiry-log\.txt|composer\.json|composer\.lock|.*\.md|.*\.log|\.ht.*)$">
+    Order allow,deny
+    Deny from all
+  </FilesMatch>
+</IfModule>
+
+# The lead store directory is never part of the public site.
+<IfModule mod_alias.c>
+  RedirectMatch 404 ^/mitt-leads
+</IfModule>
+
+# Defensive response headers. Mirrors the ones next.config.ts sets on the Node
+# build, minus HSTS and CSP which this host should set at the vhost/panel level.
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "DENY"
+</IfModule>
+
+# The build-time social card is emitted by Next as a file with NO extension
+# (out/opengraph-image), so Apache has no way to infer image/png and would
+# otherwise serve it as application/octet-stream. Social crawlers check the
+# content type, so declare it here. Query strings (?hash) are ignored when
+# Apache maps the file, so the meta tag still resolves.
+<IfModule mod_mime.c>
+  <FilesMatch "^opengraph-image$">
+    ForceType image/png
+  </FilesMatch>
+</IfModule>

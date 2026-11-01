@@ -13,7 +13,7 @@ export const site = {
   legalName: "Metkan Institute for Technical Training",
   shortLegalName: "Metkan Institute for Technical Training",
   positioning: "Technical training, skilled-worker screening and coordinated employer hiring.",
-  /** MITT's own tagline, from its published flyer (docs/FACTS-FROM-FLYER.md F1). */
+  /** MITT's own tagline, from its published flyer (FACTS-FROM-FLYER (private ops docs) F1). */
   tagline: "Forging Futures. Building Careers.",
   brandLine: "Forging Futures. Building Careers.",
   heroHeadline: "Skilled Hands. Stronger Industries.",

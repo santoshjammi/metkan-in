@@ -1,6 +1,6 @@
 /**
  * Facility facts and the real facility photographs, transcribed from MITT's flyer
- * (page 3) and its embedded images. Register: docs/FACTS-FROM-FLYER.md.
+ * (page 3) and its embedded images. Register: FACTS-FROM-FLYER (private ops docs).
  *
  * IMAGE RULE: these are genuine but low-resolution photographs (363-1600px wide).
  * They may be displayed at or below their native width in a documentary context.
